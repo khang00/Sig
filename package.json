@@ -9,7 +9,9 @@
   "scripts": {
     "dev": "nodemon src/index.ts",
     "prod": "yarn build && NODE_ENV=production node dist/src/index.js",
-    "build": "tsc --project ./"
+    "build": "tsc --project ./",
+    "test": "jest",
+    "lint": "yarn prettier --write ."
   },
   "dependencies": {
     "express": "^4.17.1",
