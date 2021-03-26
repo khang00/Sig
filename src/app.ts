@@ -3,30 +3,28 @@ import express, { Express, RequestHandler } from "express";
 import Signaling from "./websocket";
 
 export default class Server {
-  app :Express
-  port:number
-  server:http.Server
-  signaling:Signaling
+  app: Express;
+  port: number;
+  server: http.Server;
+  signaling: Signaling;
 
-  constructor(port :number) {
+  constructor(port: number) {
     this.app = express();
     this.port = port;
-    this.server = http.createServer(this.app);
-    this.signaling = new Signaling(this.server)
+    this.server = new http.Server(this.app);
+    this.signaling = new Signaling(this.server);
   }
 
-  addPathHandler(path :string, handler :RequestHandler) {
+  addPathHandler(path: string, handler: RequestHandler) {
     this.app.get(path, handler);
-    return this
+    return this;
   }
 
-  start() {
-    this.server.listen(this.port, () => {
-      console.log(`⚡️[server]: Server is running at http://localhost:${this.port}`);
-    });
+  start(onStarted: () => void) {
+    this.server.listen(this.port, onStarted);
   }
 
-  stop() {
-    this.server.close()
+  stop(onClosed: () => void) {
+    this.server.close(onClosed);
   }
 }

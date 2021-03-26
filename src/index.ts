@@ -5,4 +5,4 @@ const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 8080
 const server = new Server(port);
 const main = (req: Request, res: Response) => res.send("Express + TypeScript Server");
 server.addPathHandler("/", main);
-server.start()
+server.start(() => console.log(`⚡️[server]: Server is running at http://localhost:${port}`))
