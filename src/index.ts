@@ -1,14 +1,8 @@
-import express from "express";
-import http from "http";
-import Signaling from "./websocket";
+import { Request, Response } from "express";
+import Server from "./app";
 
-const app = express();
-const server = http.createServer(app);
-new Signaling(server);
-const port = process.env.PORT || 8080;
-
-app.get("/", (req, res) => res.send("Express + TypeScript Server"));
-
-server.listen(port, () => {
-  console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
-});
+const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 8080
+const server = new Server(port);
+const main = (req: Request, res: Response) => res.send("Express + TypeScript Server");
+server.addPathHandler("/", main);
+server.start()
