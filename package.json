@@ -1,4 +1,16 @@
 {
+  "name": "sig",
+  "version": "0.0.1",
+  "description": "signaling server for webRTC",
+  "main": "src/index.js",
+  "repository": "git@github.com:khang00/Sig.git",
+  "author": "khang00 <dlqkhang8@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "dev": "",
+    "prod": "",
+    "build": ""
+  },
   "dependencies": {
     "express": "^4.17.1",
     "prom-client": "^13.1.0",
