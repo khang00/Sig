@@ -41,6 +41,6 @@ export default class Metrics {
   }
 
   getContentType() {
-    return this.globalRegistry.contentType
+    return this.globalRegistry.contentType;
   }
 }

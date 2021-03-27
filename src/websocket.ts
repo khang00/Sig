@@ -1,7 +1,8 @@
 import { Server, Socket } from "socket.io";
 import * as http from "http";
+import { DataRecord, ID, MemoryDB, Persistence, toId } from "./persistence";
 
-type UserName = string;
+type Username = string;
 type SocketId = string;
 type RoomName = string;
 
@@ -16,31 +17,34 @@ enum SignalingEvents {
 }
 
 interface Data {
-  from: UserName;
-  to: UserName;
+  from: Username;
+  to: Username;
   content: String;
+}
+
+interface Room {
+  roomName: string;
+  users: Username[];
+}
+
+class ChatRoom extends DataRecord implements Room {
+  roomName: string;
+  users: Username[];
+
+  constructor(roomName: RoomName) {
+    super(roomName);
+    this.roomName = roomName;
+    this.users = [];
+  }
 }
 
 export default class Signaling {
   io: Server;
-  rooms: Record<RoomName, Array<RoomName>>;
-  cons: Record<UserName, SocketId>;
+  cons: Record<Username, SocketId>;
+  roomDB: Persistence<ChatRoom>;
 
-  async getUserEachRoom() {
-    return Object.keys(this.rooms).map((key: string) => {
-      return {
-        room: key,
-        count: this.rooms[key].length,
-      };
-    });
-  }
-
-  async getTotalUsers() {
-    return Object.keys(this.cons).length;
-  }
-
-  constructor(server: http.Server) {
-    this.rooms = {};
+  constructor(server: http.Server, database: Persistence<ChatRoom>) {
+    this.roomDB = database;
     this.cons = {};
     this.io = new Server(server, {
       path: "/ws",
@@ -50,6 +54,22 @@ export default class Signaling {
       },
     });
     this.io.on("connection", this.onConnection);
+  }
+
+  async getUserEachRoom() {
+    const records = this.roomDB.getAll();
+    if (records !== undefined) {
+      return records.map(({ roomName, users }) => {
+        return {
+          room: roomName,
+          count: users.length,
+        };
+      });
+    } else return [];
+  }
+
+  async getTotalUsers() {
+    return Object.keys(this.cons).length;
   }
 
   onConnection = (socket: Socket) => {
@@ -65,15 +85,31 @@ export default class Signaling {
       this.cons[username] = socket.id;
     });
     socket.on(SignalingEvents.RoomDetails, (data) => {
-      socket.emit("roomDetails", this.rooms[data.to]);
+      const room = this.roomDB.get(data.to);
+      if (room === undefined) {
+        console.error("error: room not exist");
+      } else {
+        socket.emit("roomDetails", room.users);
+      }
     });
     socket.on(SignalingEvents.JoinRoom, (data) => {
-      socket.join(data.to);
-      this.rooms[data.to].push(data.from);
+      const room = this.roomDB.get(data.to);
+      if (room === undefined) {
+        console.error("error: room not exist");
+      } else {
+        room.users.push(data.from);
+        socket.join(data.to);
+      }
     });
     socket.on(SignalingEvents.CreateRoom, (data) => {
-      socket.join(data.to);
-      this.rooms[data.to].push(data.from);
+      const room = this.roomDB.get(data.to);
+      if (room === undefined) {
+        const createdRoom = this.roomDB.save(new ChatRoom(data.to));
+        if (createdRoom !== undefined) {
+          createdRoom.users.push(data.from);
+          socket.join(data.to);
+        } else console.error("error: failed to create new room");
+      } else console.error("error: room already exist");
     });
     socket.on(SignalingEvents.Signal, this.onSignal);
     socket.on(SignalingEvents.Initiate, this.onInitiate);
@@ -87,3 +123,5 @@ export default class Signaling {
     this.io.to(this.cons[data.to]).emit(SignalingEvents.Initiate, data);
   }
 }
+
+export { ChatRoom };
