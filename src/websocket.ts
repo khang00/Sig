@@ -1,6 +1,6 @@
 import { Server, Socket } from "socket.io";
 import * as http from "http";
-import { DataRecord, ID, MemoryDB, Persistence, toId } from "./persistence";
+import { DataRecord, Persistence } from "./persistence";
 
 type Username = string;
 type SocketId = string;
@@ -9,7 +9,7 @@ type RoomName = string;
 enum SignalingEvents {
   Connected = "connection",
   Login = "login",
-  RoomDetails = "getRoomDetails",
+  RoomDetails = "roomDetails",
   JoinRoom = "joinRoom",
   CreateRoom = "createRoom",
   Signal = "signal",
@@ -28,7 +28,7 @@ interface Room {
 }
 
 class ChatRoom extends DataRecord implements Room {
-  roomName: string;
+  roomName: RoomName;
   users: Username[];
 
   constructor(roomName: RoomName) {
@@ -89,7 +89,7 @@ export default class Signaling {
       if (room === undefined) {
         console.error("error: room not exist");
       } else {
-        socket.emit("roomDetails", room.users);
+        socket.emit(SignalingEvents.RoomDetails, room.users);
       }
     });
     socket.on(SignalingEvents.JoinRoom, (data) => {
