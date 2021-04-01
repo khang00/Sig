@@ -6,8 +6,8 @@ import { ChatRoom } from "../src/websocket";
 const port = 8080;
 const newConnection = () => {
   return io(`http://localhost:${port}`, {
-    path: "/ws",
-  });
+    path: "/ws"
+  }).on("connect_error", err => console.log(err));
 };
 
 describe("User specifications", () => {
