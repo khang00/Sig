@@ -22,7 +22,7 @@ export default class Server {
     this.server = new http.Server(this.app);
     this.signaling = new Signaling(this.server, database);
     this.metrics = new Metrics(this.signaling);
-    this.proxy = HttpProxy.createProxyServer();
+    this.proxy = HttpProxy.createServer();
   }
 
   start(onStarted: () => void) {
@@ -46,7 +46,7 @@ export default class Server {
 
   private addProxyHandler() {
     this.app.get("/", async (req: Request, res: Response) => {
-      this.proxy.web(req, res, {target: "http://localhost:8080"},
+      this.proxy.web(req, res, {target: "http://localhost:8080/webrtc"},
           err => {
             console.log(err)
             res.end("Can not proxy request");
