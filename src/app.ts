@@ -1,9 +1,10 @@
 import http from "http";
-import express, { Express, Request, RequestHandler, Response } from "express";
+import express, { Express, Request, Response } from "express";
 import Signaling, { ChatRoom } from "./websocket";
 import Metrics from "./metrics";
 import Api from "./api";
-import { DataRecord, Persistence } from "./persistence";
+import { Persistence } from "./persistence";
+import HttpProxy from "http-proxy";
 
 export default class Server {
   app: Express;
@@ -12,6 +13,7 @@ export default class Server {
   server: http.Server;
   signaling: Signaling;
   metrics: Metrics;
+  proxy: HttpProxy;
 
   constructor(port: number, database: Persistence<ChatRoom>) {
     this.app = express();
@@ -20,6 +22,18 @@ export default class Server {
     this.server = new http.Server(this.app);
     this.signaling = new Signaling(this.server, database);
     this.metrics = new Metrics(this.signaling);
+    this.proxy = HttpProxy.createProxyServer();
+  }
+
+  start(onStarted: () => void) {
+    this.addMetricsHandler();
+    this.addProxyHandler();
+    this.app.use("/api", this.api.getRoute());
+    this.server.listen(this.port, onStarted);
+  }
+
+  stop(onClosed: () => void) {
+    this.server.close(onClosed);
   }
 
   private addMetricsHandler() {
@@ -30,13 +44,13 @@ export default class Server {
     });
   }
 
-  start(onStarted: () => void) {
-    this.addMetricsHandler();
-    this.app.use("/api", this.api.getRoute());
-    this.server.listen(this.port, onStarted);
-  }
-
-  stop(onClosed: () => void) {
-    this.server.close(onClosed);
+  private addProxyHandler() {
+    this.app.get("/", async (req: Request, res: Response) => {
+      this.proxy.web(req, res, {target: "http://localhost:8080"},
+          err => {
+            console.log(err)
+            res.end("Can not proxy request");
+          })
+    });
   }
 }

@@ -7,20 +7,22 @@
   "author": "khang00 <dlqkhang8@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon src/index.ts",
-    "prod": "yarn build && NODE_ENV=production node dist/src/index.js",
+    "dev": "PORT=10000 nodemon src/index.ts",
+    "prod": "yarn build && NODE_ENV=production PORT=10000 node dist/src/index.js",
     "build": "tsc --project ./",
-    "test": "jest --detectOpenHandles",
+    "test": "PORT=10000 jest --detectOpenHandles",
     "lint": "yarn prettier --write ."
   },
   "dependencies": {
     "express": "^4.17.1",
+    "http-proxy": "^1.18.1",
     "prom-client": "^13.1.0",
     "socket.io": "^4.0.0",
     "socket.io-client": "^4.0.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.11",
+    "@types/http-proxy": "^1.17.5",
     "@types/jest": "^26.0.22",
     "@types/socket.io": "^2.1.13",
     "jest": "^26.6.3",

@@ -3,7 +3,7 @@ import Server from "../src/app";
 import { MemoryDB } from "../src/persistence";
 import { ChatRoom } from "../src/websocket";
 
-const port = 8080;
+const port =  process.env.PORT ? parseInt(process.env.PORT, 10) : 8080;
 const newConnection = () => {
   return io(`http://localhost:${port}`, {
     path: "/ws"
