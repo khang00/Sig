@@ -5,6 +5,8 @@ import Metrics from "./metrics";
 import Api from "./api";
 import { Persistence } from "./persistence";
 import HttpProxy from "http-proxy";
+// @ts-ignore
+import HttpProxyRules from "http-proxy-rules";
 
 export default class Server {
   app: Express;
@@ -14,6 +16,7 @@ export default class Server {
   signaling: Signaling;
   metrics: Metrics;
   proxy: HttpProxy;
+  proxyRules: any;
 
   constructor(port: number, database: Persistence<ChatRoom>) {
     this.app = express();
@@ -23,12 +26,19 @@ export default class Server {
     this.signaling = new Signaling(this.server, database);
     this.metrics = new Metrics(this.signaling);
     this.proxy = HttpProxy.createServer();
+    this.proxyRules = new HttpProxyRules({
+      rules: {
+        "/*": "http://localhost:8080",
+        "/api/*": "http://localhost:8080/api"
+      },
+      default: "http://localhost:8080"
+    });
   }
 
   start(onStarted: () => void) {
     this.addMetricsHandler();
     this.addProxyHandler();
-    this.app.use("/api", this.api.getRoute());
+    // this.app.use("/api", this.api.getRoute());
     this.server.listen(this.port, onStarted);
   }
 
@@ -45,12 +55,14 @@ export default class Server {
   }
 
   private addProxyHandler() {
-    this.app.get("/", async (req: Request, res: Response) => {
-      this.proxy.web(req, res, {target: "http://localhost:8080/webrtc"},
-          err => {
-            console.log(err)
-            res.end("Can not proxy request");
-          })
+    this.app.get("/*", async (req: Request, res: Response) => {
+      const target = this.proxyRules.match(req);
+      this.proxy.web(req, res,
+        { target },
+        err => {
+          console.error(err);
+          res.end("Can not proxy request");
+        });
     });
   }
 }
