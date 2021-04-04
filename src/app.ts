@@ -31,9 +31,9 @@ export default class Server {
     this.proxyRules = new HttpProxyRules({
       rules: {
         "/*": "http://localhost:8080",
-        "/api/*": "http://localhost:8080/api"
+        "/api/*": "http://localhost:8080/api",
       },
-      default: "http://localhost:8080"
+      default: "http://localhost:8080",
     });
   }
 
@@ -70,12 +70,10 @@ export default class Server {
   private addProxyHandler() {
     this.app.get("/*", async (req: Request, res: Response) => {
       const target = this.proxyRules.match(req);
-      this.proxy.web(req, res,
-        { target },
-        err => {
-          console.error(err);
-          res.end("Can not proxy request");
-        });
+      this.proxy.web(req, res, { target }, (err) => {
+        console.error(err);
+        res.end("Can not proxy request");
+      });
     });
   }
 }

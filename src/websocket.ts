@@ -111,17 +111,15 @@ export default class Signaling {
         } else console.error("error: failed to create new room");
       } else console.error("error: room already exist");
     });
-    socket.on(SignalingEvents.Signal, this.onSignal);
-    socket.on(SignalingEvents.Initiate, this.onInitiate);
+
+    socket.on(SignalingEvents.Signal, (data) => {
+      socket.to(this.cons[data.to]).emit(SignalingEvents.Signal, data);
+    });
+
+    socket.on(SignalingEvents.Initiate, (data) => {
+      socket.to(this.cons[data.to]).emit(SignalingEvents.Initiate, data);
+    });
   };
-
-  onSignal(data: Data) {
-    this.io.to(this.cons[data.to]).emit(SignalingEvents.Signal, data);
-  }
-
-  onInitiate(data: Data) {
-    this.io.to(this.cons[data.to]).emit(SignalingEvents.Initiate, data);
-  }
 }
 
 export { ChatRoom };
