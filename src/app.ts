@@ -1,4 +1,5 @@
 import http from "http";
+import https from "https";
 import express, { Express, Request, Response } from "express";
 import Signaling, { ChatRoom } from "./websocket";
 import Metrics from "./metrics";
@@ -7,6 +8,7 @@ import { Persistence } from "./persistence";
 import HttpProxy from "http-proxy";
 // @ts-ignore
 import HttpProxyRules from "http-proxy-rules";
+import * as fs from "fs";
 
 export default class Server {
   app: Express;
@@ -18,11 +20,11 @@ export default class Server {
   proxy: HttpProxy;
   proxyRules: any;
 
-  constructor(port: number, database: Persistence<ChatRoom>) {
+  constructor(port: number, database: Persistence<ChatRoom>, secure = false) {
     this.app = express();
     this.api = new Api();
+    this.server = this.createServer(this.app, secure);
     this.port = port;
-    this.server = new http.Server(this.app);
     this.signaling = new Signaling(this.server, database);
     this.metrics = new Metrics(this.signaling);
     this.proxy = HttpProxy.createServer();
@@ -33,6 +35,17 @@ export default class Server {
       },
       default: "http://localhost:8080"
     });
+  }
+
+  createServer(app: Express, secure: boolean): http.Server {
+    if (secure) {
+      const privateKey = fs.readFileSync("secret/key_from.pem");
+      const certificate = fs.readFileSync("secret/cert_from.pem");
+      const credentials = { key: privateKey, cert: certificate };
+      return new https.Server(credentials, app);
+    } else {
+      return new http.Server(app);
+    }
   }
 
   start(onStarted: () => void) {
