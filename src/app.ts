@@ -9,13 +9,15 @@ import HttpProxy from "http-proxy";
 // @ts-ignore
 import HttpProxyRules from "http-proxy-rules";
 import * as fs from "fs";
+import SpaceSocket from "./spaceSocket";
+import SpaceMetrics from "./spaceMetrics";
 
 export default class Server {
   app: Express;
   api: Api;
   port: number;
   server: http.Server;
-  signaling: Signaling;
+  signaling: SpaceSocket;
   metrics: Metrics;
   proxy: HttpProxy;
   proxyRules: any;
@@ -25,8 +27,8 @@ export default class Server {
     this.api = new Api();
     this.server = this.createServer(this.app, secure);
     this.port = port;
-    this.signaling = new Signaling(this.server, database);
-    this.metrics = new Metrics(this.signaling);
+    this.signaling = new SpaceSocket(this.server);
+    this.metrics = new SpaceMetrics(this.signaling);
     this.proxy = HttpProxy.createServer();
     this.proxyRules = new HttpProxyRules({
       rules: {
@@ -50,8 +52,8 @@ export default class Server {
 
   start(onStarted: () => void) {
     this.addMetricsHandler();
-    this.addProxyHandler();
     // this.app.use("/api", this.api.getRoute());
+    this.addProxyHandler();
     this.server.listen(this.port, onStarted);
   }
 
