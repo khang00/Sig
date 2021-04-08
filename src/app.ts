@@ -1,8 +1,7 @@
 import http from "http";
 import https from "https";
 import express, { Express, Request, Response } from "express";
-import Signaling, { ChatRoom } from "./websocket";
-import Metrics from "./metrics";
+import { ChatRoom } from "./websocket";
 import Api from "./api";
 import { Persistence } from "./persistence";
 import HttpProxy from "http-proxy";
@@ -18,7 +17,7 @@ export default class Server {
   port: number;
   server: http.Server;
   signaling: SpaceSocket;
-  metrics: Metrics;
+  metrics: SpaceMetrics;
   proxy: HttpProxy;
   proxyRules: any;
 
@@ -27,15 +26,15 @@ export default class Server {
     this.api = new Api();
     this.server = this.createServer(this.app, secure);
     this.port = port;
-    this.signaling = new SpaceSocket(this.server);
-    this.metrics = new SpaceMetrics(this.signaling);
+    this.metrics = new SpaceMetrics();
+    this.signaling = new SpaceSocket(this.server, this.metrics);
     this.proxy = HttpProxy.createServer();
     this.proxyRules = new HttpProxyRules({
       rules: {
         "/*": "http://localhost:8080",
-        "/api/*": "http://localhost:8080/api",
+        "/api/*": "http://localhost:8080/api"
       },
-      default: "http://localhost:8080",
+      default: "http://localhost:8080"
     });
   }
 

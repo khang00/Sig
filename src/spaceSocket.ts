@@ -1,6 +1,7 @@
 import { Server, Socket } from "socket.io";
 import http from "http";
 import fs from "fs";
+import SpaceMetrics from "./spaceMetrics";
 
 export default class SpaceSocket {
   io: Server;
@@ -9,8 +10,10 @@ export default class SpaceSocket {
   roomUpdateRequests: any;
   roomScreenShare: any;
   npcData: any;
+  metrics: SpaceMetrics;
 
-  constructor(server: http.Server) {
+  constructor(server: http.Server, metrics: SpaceMetrics) {
+    this.metrics = metrics;
     this.users = {};
     this.socketToRoom = {};
     this.roomUpdateRequests = {};
@@ -43,7 +46,7 @@ export default class SpaceSocket {
   onConnection(socket: Socket | any) {
     socket.userData = { x: 0, y: 0, z: 0, heading: 0 };//Default values;
 
-    let clientIp = socket.request.connection.remoteAddress;
+    const USER_IP = socket.request.connection.remoteAddress;
 
     socket.emit("setId", { id: socket.id, npcs: this.npcData });
 
@@ -189,6 +192,15 @@ export default class SpaceSocket {
           if (!error) {
             data = txtString.toString();
           }
+
+          const userTrackMetric = {
+            ip: USER_IP,
+            user: socket.userData.username,
+            room: roomID,
+            socket: socket.id
+          };
+
+          this.metrics.userTrack.inc(userTrackMetric);
 
           data += `${new Date()}: ${roomID} has user ${socket.userData.username} joined with socket ID: ${socket.id}\n`;
           fs.writeFile("../IP_logs.txt", data, (error) => {

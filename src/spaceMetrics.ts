@@ -1,12 +1,18 @@
-import { Registry, Gauge, collectDefaultMetrics, register } from "prom-client";
-import SpaceSocket from "./spaceSocket";
+import { Registry, collectDefaultMetrics, register, Counter } from "prom-client";
 
 export default class SpaceMetrics {
   sigRegistry: Registry;
   globalRegistry: Registry;
+  userTrack: any;
 
-  constructor(space: SpaceSocket) {
+  constructor() {
     this.sigRegistry = new Registry();
+    this.userTrack = new Counter({
+      name: "user_tracking",
+      help: "ip, user, room, socket of a web socket connection",
+      registers: [this.sigRegistry],
+      labelNames: ["ip", "user", "room", "socket"]
+    });
 
     /*new Gauge({
       name: "total_ws_users",
@@ -30,7 +36,7 @@ export default class SpaceMetrics {
     });*/
 
     collectDefaultMetrics({
-      gcDurationBuckets: [0.001, 0.01, 0.1, 1, 2, 5], // These are the default buckets.
+      gcDurationBuckets: [0.001, 0.01, 0.1, 1, 2, 5] // These are the default buckets.
     });
 
     this.globalRegistry = Registry.merge([this.sigRegistry, register]);
