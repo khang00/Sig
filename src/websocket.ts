@@ -50,8 +50,8 @@ export default class Signaling {
       path: "/ws",
       cookie: false,
       cors: {
-        origin: "*",
-      },
+        origin: "*"
+      }
     });
     this.io.on("connection", this.onConnection);
   }
@@ -62,7 +62,7 @@ export default class Signaling {
       return records.map(({ roomName, users }) => {
         return {
           room: roomName,
-          count: users.length,
+          count: users.length
         };
       });
     } else return [];
@@ -74,6 +74,7 @@ export default class Signaling {
 
   onConnection = (socket: Socket) => {
     socket.emit(SignalingEvents.Connected, "");
+
     socket.on("disconnecting", (reason) => {
       Object.keys(this.cons).forEach((username) => {
         if (this.cons[username] === socket.id) {
@@ -81,9 +82,11 @@ export default class Signaling {
         }
       });
     });
+
     socket.on(SignalingEvents.Login, (username) => {
       this.cons[username] = socket.id;
     });
+
     socket.on(SignalingEvents.RoomDetails, (data) => {
       const room = this.roomDB.get(data.to);
       if (room === undefined) {
@@ -92,6 +95,7 @@ export default class Signaling {
         socket.emit(SignalingEvents.RoomDetails, room.users);
       }
     });
+
     socket.on(SignalingEvents.JoinRoom, (data) => {
       const room = this.roomDB.get(data.to);
       if (room === undefined) {
@@ -101,6 +105,7 @@ export default class Signaling {
         socket.join(data.to);
       }
     });
+
     socket.on(SignalingEvents.CreateRoom, (data) => {
       const room = this.roomDB.get(data.to);
       if (room === undefined) {
