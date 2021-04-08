@@ -2,9 +2,9 @@ import { Server, Socket } from "socket.io";
 import * as http from "http";
 import { DataRecord, Persistence } from "./persistence";
 
-type Username = string;
-type SocketId = string;
-type RoomName = string;
+export type Username = string;
+export type SocketId = string;
+export type RoomName = string;
 
 enum SignalingEvents {
   Connected = "connection",
