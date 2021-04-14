@@ -31,10 +31,9 @@ export default class Server {
     this.proxy = HttpProxy.createServer();
     this.proxyRules = new HttpProxyRules({
       rules: {
-        "/*": "http://localhost:8080",
-        "/api/*": "http://localhost:8080/api"
+        "/*": "http://localhost:8000",
       },
-      default: "http://localhost:8080"
+      default: "http://localhost:8000"
     });
   }
 
