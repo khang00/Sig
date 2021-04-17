@@ -1,6 +1,7 @@
 import { Server, Socket } from "socket.io";
 import * as http from "http";
 import { DataRecord, Persistence } from "./persistence";
+import { instrument } from "@socket.io/admin-ui";
 
 export type Username = string;
 export type SocketId = string;
@@ -52,6 +53,9 @@ export default class Signaling {
       cors: {
         origin: "*"
       }
+    });
+    instrument(this.io, {
+      auth: false
     });
     this.io.on("connection", this.onConnection);
   }
