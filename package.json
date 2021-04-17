@@ -14,6 +14,7 @@
     "lint": "yarn prettier --write ."
   },
   "dependencies": {
+    "@socket.io/admin-ui": "^0.0.1",
     "express": "^4.17.1",
     "http-proxy": "^1.18.1",
     "http-proxy-rules": "^1.1.3",
