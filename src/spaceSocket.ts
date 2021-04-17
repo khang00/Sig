@@ -2,6 +2,7 @@ import { Server, Socket } from "socket.io";
 import http from "http";
 import fs from "fs";
 import SpaceMetrics from "./spaceMetrics";
+import { instrument } from "@socket.io/admin-ui";
 
 export default class SpaceSocket {
   io: Server;
@@ -38,6 +39,10 @@ export default class SpaceSocket {
       cors: {
         origin: "*"
       }
+    });
+
+    instrument(this.io, {
+      auth: false
     });
 
     this.io.on("connection", (socket: Socket | any) => {
