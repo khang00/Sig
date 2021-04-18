@@ -189,30 +189,18 @@ export default class SpaceSocket {
         roomID = roomID.replace("#", "");
 
         if (roomID !== "Admin") {
-          fs.readFile("../IP_logs.txt", (error, txtString) => {
-            var data = "";
-            if (!error) {
-              data = txtString.toString();
-            }
+          const userTrackMetric = {
+            ip: USER_IP,
+            user: socket.userData.username,
+            room: roomID,
+            socket: socket.id,
+            time: Math.floor(Date.now() / 1000)
+          };
 
-            const userTrackMetric = {
-              ip: USER_IP,
-              user: socket.userData.username,
-              room: roomID,
-              socket: socket.id,
-              time: Math.floor(Date.now() / 1000),
-            };
-
-            this.metrics.userTrack.inc(userTrackMetric);
-
-            data += `${new Date()}: ${roomID} has user ${socket.userData.username} joined with socket ID: ${socket.id}\n`;
-            fs.writeFile("../IP_logs.txt", data, (error) => {
-              if (error) throw error;
-            });
-          });
+          this.metrics.userTrack.inc(userTrackMetric);
         }
 
-        if (this.users[roomID]) {
+        if (this.users.hasOwnProperty(roomID)) {
           this.users[roomID].push(socket.id);
         } else {
           this.users[roomID] = [socket.id];
