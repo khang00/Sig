@@ -45,10 +45,9 @@ export default class SpaceSocket {
       auth: false
     });
 
+    // first invariant: join room event happens before init
     this.io.on("connection", (socket: Socket | any) => {
       socket.userData = { x: 0, y: 0, z: 0, heading: 0 };//Default values;
-
-      const USER_IP = socket.request.connection.remoteAddress;
 
       socket.emit("setId", { id: socket.id, npcs: this.npcData });
 
@@ -63,6 +62,16 @@ export default class SpaceSocket {
         socket.userData.heading = data.h;
         socket.userData.pb = data.pb;
         socket.userData.action = "idle";
+
+        const userTrackMetric = {
+          ip: socket.request.connection.remoteAddress,
+          user: socket.userData.username,
+          room: socket.userData.room,
+          socket: socket.id,
+          time: socket.userData.joinRoomTime
+        };
+
+        this.metrics.userTrack.inc(userTrackMetric);
 
         this.roomUpdateRequests[this.socketToRoom[socket.id]] = true;
       });
@@ -189,15 +198,8 @@ export default class SpaceSocket {
         roomID = roomID.replace("#", "");
 
         if (roomID !== "Admin") {
-          const userTrackMetric = {
-            ip: USER_IP,
-            user: socket.userData.username,
-            room: roomID,
-            socket: socket.id,
-            time: Math.floor(Date.now() / 1000)
-          };
-
-          this.metrics.userTrack.inc(userTrackMetric);
+          socket.userData.room = roomID;
+          socket.userData.joinRoomTime = Math.floor(Date.now() / 1000);
         }
 
         if (this.users.hasOwnProperty(roomID)) {
@@ -205,6 +207,7 @@ export default class SpaceSocket {
         } else {
           this.users[roomID] = [socket.id];
         }
+        console.log(this.users);
         this.socketToRoom[socket.id] = roomID;
         const usersInThisRoom = this.users[roomID].filter((id: any) => id !== socket.id);
 
