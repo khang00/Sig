@@ -210,7 +210,7 @@ export default class SpaceSocket {
         console.log(this.users);
         this.socketToRoom[socket.id] = roomID;
         const usersInThisRoom = this.users[roomID].filter((id: any) => id !== socket.id);
-
+        console.log(usersInThisRoom);
         socket.join(roomID);
         socket.emit("all users", usersInThisRoom);
         if (this.roomScreenShare[roomID] !== undefined) {
