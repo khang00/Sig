@@ -207,14 +207,14 @@ export default class SpaceSocket {
         } else {
           this.users[roomID] = [socket.id];
         }
-        console.log(this.users);
+
         this.socketToRoom[socket.id] = roomID;
         const usersInThisRoom = this.users[roomID].filter((id: any) => id !== socket.id);
-        console.log(usersInThisRoom);
+
         socket.join(roomID);
-        socket.emit("all users", usersInThisRoom);
+        socket.broadcast.emit("all users", usersInThisRoom);
         if (this.roomScreenShare[roomID] !== undefined) {
-          socket.emit("updateRoomStreams", this.roomScreenShare[roomID]);
+          socket.broadcast.emit("updateRoomStreams", this.roomScreenShare[roomID]);
         }
 
         fs.readFile("../CustomObjectData.txt", (error, txtString) => {
