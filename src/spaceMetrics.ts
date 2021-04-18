@@ -11,7 +11,7 @@ export default class SpaceMetrics {
       name: "user_tracking",
       help: "ip, user, room, socket of a web socket connection",
       registers: [this.sigRegistry],
-      labelNames: ["ip", "user", "room", "socket"]
+      labelNames: ["ip", "user", "room", "socket", "time"]
     });
 
     /*new Gauge({

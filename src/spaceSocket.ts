@@ -53,7 +53,7 @@ export default class SpaceSocket {
       socket.emit("setId", { id: socket.id, npcs: this.npcData });
 
       socket.on("init", (data: any) => {
-        console.log(`socket.init ${data.model}  ${data.colour}`);
+        console.log(`socket.init ${data.username} ${data.model}  ${data.colour}`);
         socket.userData.username = data.username;
         socket.userData.model = data.model;
         socket.userData.colour = data.colour;
@@ -199,7 +199,8 @@ export default class SpaceSocket {
               ip: USER_IP,
               user: socket.userData.username,
               room: roomID,
-              socket: socket.id
+              socket: socket.id,
+              time: Math.floor(Date.now() / 1000),
             };
 
             this.metrics.userTrack.inc(userTrackMetric);
