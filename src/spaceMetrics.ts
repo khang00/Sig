@@ -12,7 +12,7 @@ export default class SpaceMetrics {
   userTrack: any;
 
   constructor(signaling: SpaceSocket) {
-    const trackUsers = {};
+    let trackUsers = new Map<string, Track>();
     this.sigRegistry = new Registry();
     this.userTrack = new Gauge({
       name: "user_tracking",
@@ -22,12 +22,15 @@ export default class SpaceMetrics {
       collect() {
         const usersTrackData = signaling.getUsersTrackingData();
         const userBuckets = usersTrackData.reduce((buckets: Buckets, record: Track) => {
-          if (trackUsers.hasOwnProperty(record.socket)) {
+          if (trackUsers.has(record.socket)) {
             return { left: buckets.left, right: [...buckets.right, record] };
           } else {
             return { left: [...buckets.left, record], right: buckets.right };
           }
         }, { left: [], right: [] });
+
+        trackUsers = usersTrackData.reduce((acc, track) =>
+          acc.set(track.socket, track), new Map<string, Track>());
 
         userBuckets.left.forEach((track: any) => this.set(track, 0));
         userBuckets.right.forEach((track: any) => this.set(track, 1));
