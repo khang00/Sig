@@ -1,5 +1,10 @@
 import { Registry, collectDefaultMetrics, register, Counter, Gauge } from "prom-client";
-import SpaceSocket from "./spaceSocket";
+import SpaceSocket, { Track } from "./spaceSocket";
+
+interface Buckets {
+  left: Track[]
+  right: Track[]
+}
 
 export default class SpaceMetrics {
   sigRegistry: Registry;
@@ -7,8 +12,8 @@ export default class SpaceMetrics {
   userTrack: any;
 
   constructor(signaling: SpaceSocket) {
+    const trackUsers = {};
     this.sigRegistry = new Registry();
-
     this.userTrack = new Gauge({
       name: "user_tracking",
       help: "ip, user, room, socket of a web socket connection",
@@ -16,7 +21,16 @@ export default class SpaceMetrics {
       labelNames: ["ip", "user", "room", "socket"],
       collect() {
         const usersTrackData = signaling.getUsersTrackingData();
-        usersTrackData.forEach(track => this.set(track, 1));
+        const userBuckets = usersTrackData.reduce((buckets: Buckets, record: Track) => {
+          if (trackUsers.hasOwnProperty(record.socket)) {
+            return { left: buckets.left, right: [...buckets.right, record] };
+          } else {
+            return { left: [...buckets.left, record], right: buckets.right };
+          }
+        }, { left: [], right: [] });
+
+        userBuckets.left.forEach((track: any) => this.set(track, 0));
+        userBuckets.right.forEach((track: any) => this.set(track, 1));
       }
     });
 

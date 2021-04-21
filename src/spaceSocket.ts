@@ -4,7 +4,7 @@ import fs from "fs";
 import SpaceMetrics from "./spaceMetrics";
 import { instrument } from "@socket.io/admin-ui";
 
-interface Track {
+export interface Track {
   ip: string,
   user: string,
   room: string,
