@@ -7,11 +7,12 @@ export default class SpaceMetrics {
 
   constructor() {
     this.sigRegistry = new Registry();
-    this.userTrack = new Counter({
+
+    this.userTrack = new Gauge({
       name: "user_tracking",
       help: "ip, user, room, socket of a web socket connection",
       registers: [this.sigRegistry],
-      labelNames: ["ip", "user", "room", "socket", "time"]
+      labelNames: ["ip", "user", "room", "socket"]
     });
 
     /*new Gauge({
