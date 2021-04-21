@@ -256,7 +256,10 @@ export default class SpaceSocket {
           room = room.filter((id: any) => id !== socket.id);
           this.users[roomID] = room;
         }
-        this.usersTrackingData.delete(socket.id);
+        if (!this.usersTrackingData.delete(socket.id)) {
+          console.log("delete socket failed", socket.id);
+        }
+
         this.roomUpdateRequests[roomID] = true;
       });
 
@@ -273,7 +276,7 @@ export default class SpaceSocket {
     });
   }
 
-  async getUsersTrackingData() : Promise<Track[]> {
+  async getUsersTrackingData(): Promise<Track[]> {
     return Array.from(this.usersTrackingData.values());
   }
 }
