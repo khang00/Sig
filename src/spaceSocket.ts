@@ -4,6 +4,13 @@ import fs from "fs";
 import SpaceMetrics from "./spaceMetrics";
 import { instrument } from "@socket.io/admin-ui";
 
+interface Track {
+  ip: string,
+  user: string,
+  room: string,
+  socket: string,
+}
+
 export default class SpaceSocket {
   io: Server;
   users: any;
@@ -11,11 +18,11 @@ export default class SpaceSocket {
   roomUpdateRequests: any;
   roomScreenShare: any;
   npcData: any;
-  metrics: SpaceMetrics;
+  usersTrackingData: Map<string, Track>;
 
-  constructor(server: http.Server, metrics: SpaceMetrics) {
-    this.metrics = metrics;
+  constructor(server: http.Server) {
     this.users = {};
+    this.usersTrackingData = new Map<string, Track>();
     this.socketToRoom = {};
     this.roomUpdateRequests = {};
     this.roomScreenShare = {};
@@ -63,15 +70,14 @@ export default class SpaceSocket {
         socket.userData.pb = data.pb;
         socket.userData.action = "idle";
 
-        const userTrackMetric = {
+        const userTrack: Track = {
           ip: socket.request.connection.remoteAddress,
           user: socket.userData.username,
           room: socket.userData.room,
-          socket: socket.id,
-          time: socket.userData.joinRoomTime
+          socket: socket.id
         };
 
-        this.metrics.userTrack.inc(userTrackMetric);
+        this.usersTrackingData.set(userTrack.socket, userTrack);
 
         this.roomUpdateRequests[this.socketToRoom[socket.id]] = true;
       });
@@ -250,7 +256,7 @@ export default class SpaceSocket {
           room = room.filter((id: any) => id !== socket.id);
           this.users[roomID] = room;
         }
-
+        this.usersTrackingData.delete(socket.id);
         this.roomUpdateRequests[roomID] = true;
       });
 
@@ -265,5 +271,9 @@ export default class SpaceSocket {
         });
       });
     });
+  }
+
+  async getUsersTrackingData() : Promise<Track[]> {
+    return Array.from(this.usersTrackingData.values());
   }
 }

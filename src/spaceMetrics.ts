@@ -1,18 +1,23 @@
 import { Registry, collectDefaultMetrics, register, Counter, Gauge } from "prom-client";
+import SpaceSocket from "./spaceSocket";
 
 export default class SpaceMetrics {
   sigRegistry: Registry;
   globalRegistry: Registry;
   userTrack: any;
 
-  constructor() {
+  constructor(signaling: SpaceSocket) {
     this.sigRegistry = new Registry();
 
     this.userTrack = new Gauge({
       name: "user_tracking",
       help: "ip, user, room, socket of a web socket connection",
       registers: [this.sigRegistry],
-      labelNames: ["ip", "user", "room", "socket"]
+      labelNames: ["ip", "user", "room", "socket"],
+      async collect() {
+        const usersTrackData = await signaling.getUsersTrackingData();
+        usersTrackData.forEach(track => this.set(track, 1));
+      }
     });
 
     /*new Gauge({

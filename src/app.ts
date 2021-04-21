@@ -26,8 +26,8 @@ export default class Server {
     this.api = new Api();
     this.server = this.createServer(this.app, secure);
     this.port = port;
-    this.metrics = new SpaceMetrics();
-    this.signaling = new SpaceSocket(this.server, this.metrics);
+    this.signaling = new SpaceSocket(this.server);
+    this.metrics = new SpaceMetrics(this.signaling);
     this.proxy = HttpProxy.createServer();
     this.proxyRules = new HttpProxyRules({
       rules: {
