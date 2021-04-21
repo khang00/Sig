@@ -14,8 +14,8 @@ export default class SpaceMetrics {
       help: "ip, user, room, socket of a web socket connection",
       registers: [this.sigRegistry],
       labelNames: ["ip", "user", "room", "socket"],
-      async collect() {
-        const usersTrackData = await signaling.getUsersTrackingData();
+      collect() {
+        const usersTrackData = signaling.getUsersTrackingData();
         usersTrackData.forEach(track => this.set(track, 1));
       }
     });

@@ -276,7 +276,7 @@ export default class SpaceSocket {
     });
   }
 
-  async getUsersTrackingData(): Promise<Track[]> {
+  getUsersTrackingData(): Promise<Track[]> {
     return Array.from(this.usersTrackingData.values());
   }
 }
