@@ -259,7 +259,7 @@ export default class SpaceSocket {
         if (!this.usersTrackingData.delete(socket.id)) {
           console.log("delete socket failed", socket.id);
         }
-
+        console.log(this.usersTrackingData)
         this.roomUpdateRequests[roomID] = true;
       });
 
