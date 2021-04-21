@@ -28,10 +28,10 @@ export default class SpaceMetrics {
             return { left: [...buckets.left, record], right: buckets.right };
           }
         }, { left: [], right: [] });
-
+        console.log(trackUsers)
         trackUsers = usersTrackData.reduce((acc, track) =>
           acc.set(track.socket, track), new Map<string, Track>());
-        console.log(userBuckets.left, userBuckets.right)
+        console.log(trackUsers)
         userBuckets.left.forEach((track: any) => this.set(track, 0));
         userBuckets.right.forEach((track: any) => this.set(track, 1));
       }
