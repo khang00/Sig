@@ -77,7 +77,7 @@ export default class SpaceSocket {
           socket: socket.id
         };
 
-        this.usersTrackingData.set(userTrack.socket, userTrack);
+        this.usersTrackingData.set(socket.id, userTrack);
 
         this.roomUpdateRequests[this.socketToRoom[socket.id]] = true;
       });
