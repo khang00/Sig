@@ -212,9 +212,9 @@ export default class SpaceSocket {
         const usersInThisRoom = this.users[roomID].filter((id: any) => id !== socket.id);
 
         socket.join(roomID);
-        socket.broadcast.emit("all users", usersInThisRoom);
+        socket.emit("all users", usersInThisRoom);
         if (this.roomScreenShare[roomID] !== undefined) {
-          socket.broadcast.emit("updateRoomStreams", this.roomScreenShare[roomID]);
+          socket.emit("updateRoomStreams", this.roomScreenShare[roomID]);
         }
 
         fs.readFile("../CustomObjectData.txt", (error, txtString) => {
