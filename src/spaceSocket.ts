@@ -276,7 +276,7 @@ export default class SpaceSocket {
     });
   }
 
-  getUsersTrackingData(): Promise<Track[]> {
+  getUsersTrackingData(): Track[] {
     return Array.from(this.usersTrackingData.values());
   }
 }
