@@ -1,4 +1,4 @@
-import { Registry, collectDefaultMetrics, register, Counter } from "prom-client";
+import { Registry, collectDefaultMetrics, register, Counter, Gauge } from "prom-client";
 
 export default class SpaceMetrics {
   sigRegistry: Registry;
