@@ -1,18 +1,13 @@
 import { Registry, collectDefaultMetrics, register, Counter, Gauge } from "prom-client";
 import SpaceSocket, { Track } from "./spaceSocket";
 
-interface Buckets {
-  left: Track[]
-  right: Track[]
-}
-
 export default class SpaceMetrics {
   sigRegistry: Registry;
   globalRegistry: Registry;
   userTrack: any;
 
   constructor(signaling: SpaceSocket) {
-    let trackUsers = new Map<string, Track>();
+    let trackUsers: Track[] = [];
     this.sigRegistry = new Registry();
     this.userTrack = new Gauge({
       name: "user_tracking",
@@ -21,19 +16,13 @@ export default class SpaceMetrics {
       labelNames: ["ip", "user", "room", "socket"],
       collect() {
         const usersTrackData = signaling.getUsersTrackingData();
-        const userBuckets = usersTrackData.reduce((buckets: Buckets, record: Track) => {
-          if (trackUsers.has(record.socket)) {
-            return { left: buckets.left, right: [...buckets.right, record] };
-          } else {
-            return { left: [...buckets.left, record], right: buckets.right };
-          }
-        }, { left: [], right: [] });
+        const userOffline = trackUsers.filter(track => usersTrackData
+          .find(value => value.socket === track.socket) === undefined);
 
-        trackUsers = usersTrackData.reduce((acc, track) =>
-          acc.set(track.socket, track), new Map<string, Track>());
+        trackUsers = [...usersTrackData];
 
-        userBuckets.left.forEach((track: any) => this.set(track, 0));
-        userBuckets.right.forEach((track: any) => this.set(track, 1));
+        userOffline.forEach((track: any) => this.set(track, 0));
+        usersTrackData.forEach((track: any) => this.set(track, 1));
       }
     });
 
