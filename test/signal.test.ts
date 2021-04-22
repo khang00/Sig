@@ -1,7 +1,7 @@
 import { io } from "socket.io-client";
 import Server from "../src/app";
 import { MemoryDB } from "../src/persistence";
-import { ChatRoom } from "../src/websocket";
+import { SigRoom } from "../src/websocket";
 
 const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 8080;
 const newConnection = () => {
@@ -11,7 +11,7 @@ const newConnection = () => {
 };
 
 describe("User specifications", () => {
-  const mockDB = new MemoryDB<ChatRoom>();
+  const mockDB = new MemoryDB<SigRoom>();
   const server = new Server(port, mockDB);
   beforeAll((done) => {
     server.start(() => {
