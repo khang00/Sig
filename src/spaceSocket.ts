@@ -52,6 +52,53 @@ export default class SpaceSocket {
       auth: false
     });
 
+    setInterval(() => {
+      const nsp = this.io.of('/');
+      for (const roomID in this.roomUpdateRequests) {
+        if (this.roomUpdateRequests[roomID]) {
+          this.roomUpdateRequests[roomID] = false;
+          let usersInThisRoom = this.users[roomID];
+          if (usersInThisRoom === undefined)
+            usersInThisRoom = [];
+
+          let pack = [];
+          for (let sId of usersInThisRoom) {
+            const socket = nsp.sockets.get(sId);
+            // @ts-ignore
+            if (socket !== undefined && socket.userData.model !== undefined) {
+              pack.push({
+                id: socket.id,
+                // @ts-ignore
+                username: socket.userData.username,
+                // @ts-ignore
+                model: socket.userData.model,
+                // @ts-ignore
+                colour: socket.userData.colour,
+                // @ts-ignore
+                x: socket.userData.x,
+                // @ts-ignore
+                y: socket.userData.y,
+                // @ts-ignore
+                z: socket.userData.z,
+                // @ts-ignore
+                heading: socket.userData.heading,
+                // @ts-ignore
+                pb: socket.userData.pb,
+                // @ts-ignore
+                action: socket.userData.action,
+                // @ts-ignore
+                headX: socket.userData.headX,
+                // @ts-ignore
+                headY: socket.userData.headY
+              });
+            }
+          }
+
+          if (pack.length>0) this.io.to(roomID).emit('remoteData', pack);
+        }
+      }
+    }, 1000/40);
+
     // first invariant: join room event happens before init
     this.io.on("connection", (socket: Socket | any) => {
       socket.userData = { x: 0, y: 0, z: 0, heading: 0 };//Default values;
