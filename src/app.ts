@@ -1,14 +1,15 @@
 import http from "http";
 import https from "https";
 import express, { Express, Request, Response } from "express";
-import Signaling, { SigRoom } from "./websocket";
-import Metrics from "./metrics";
-import Api from "./api";
+import { SigRoom } from "./websocket";
+import { Api } from "./api";
 import { Persistence } from "./persistence";
 import HttpProxy from "http-proxy";
 // @ts-ignore
 import HttpProxyRules from "http-proxy-rules";
 import * as fs from "fs";
+import Signaling from "./websocket";
+import Metrics from "./metrics";
 
 export default class Server {
   app: Express;
@@ -30,10 +31,9 @@ export default class Server {
     this.proxy = HttpProxy.createServer();
     this.proxyRules = new HttpProxyRules({
       rules: {
-        "/*": "http://localhost:8080",
-        "/api/*": "http://localhost:8080/api",
+        "/api/*": "http://localhost:10000/api"
       },
-      default: "http://localhost:8080",
+      default: "http://localhost:8000"
     });
   }
 
@@ -49,10 +49,12 @@ export default class Server {
   }
 
   start(onStarted: () => void) {
-    this.addMetricsHandler();
-    this.addProxyHandler();
-    // this.app.use("/api", this.api.getRoute());
-    this.server.listen(this.port, onStarted);
+    this.api.onRouter((router) => {
+      this.app.use("/api", router);
+      this.addMetricsHandler();
+      this.addProxyHandler();
+      this.server.listen(this.port, onStarted);
+    });
   }
 
   stop(onClosed: () => void) {

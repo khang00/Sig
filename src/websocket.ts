@@ -55,7 +55,8 @@ export default class Signaling {
       }
     });
     instrument(this.io, {
-      auth: false
+      auth: false,
+      namespaceName: "/"
     });
     this.io.on("connection", this.onConnection);
   }
