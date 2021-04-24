@@ -1,15 +1,15 @@
 import { Registry, collectDefaultMetrics, register, Counter, Gauge } from "prom-client";
-import SpaceSocket, { Track } from "./spaceSocket";
+import SpaceSocket, { ActionTrack, Track } from "./spaceSocket";
 
 export default class SpaceMetrics {
   sigRegistry: Registry;
   globalRegistry: Registry;
-  userTrack: any;
 
   constructor(signaling: SpaceSocket) {
-    let trackUsers: Track[] = [];
     this.sigRegistry = new Registry();
-    this.userTrack = new Gauge({
+
+    let trackUsers: Track[] = [];
+    new Gauge({
       name: "user_tracking",
       help: "ip, user, room, socket of a web socket connection",
       registers: [this.sigRegistry],
@@ -23,6 +23,24 @@ export default class SpaceMetrics {
 
         userOffline.forEach((track: any) => this.set(track, 0));
         usersTrackData.forEach((track: any) => this.set(track, 1));
+      }
+    });
+
+    let trackActions: ActionTrack[] = [];
+    new Gauge({
+      name: "communicate_tracking",
+      help: "tracks communication actions by action types, room, sender, and receiver",
+      registers: [this.sigRegistry],
+      labelNames: ["senderSocket", "action", "room", "sender", "receiver"],
+      collect() {
+        const commTrackData = signaling.getCommunicateTrackingData();
+        const commCurrent = trackActions.filter(track => commTrackData
+          .find(value => value.senderSocket === track.senderSocket) === undefined);
+
+        trackActions = [...commTrackData];
+
+        commCurrent.forEach((track: any) => this.set(track, 0));
+        commTrackData.forEach((track: any) => this.set(track, 1));
       }
     });
 

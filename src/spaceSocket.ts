@@ -11,6 +11,14 @@ export interface Track {
   socket: string,
 }
 
+export interface ActionTrack {
+  senderSocket: string
+  action: string,
+  room: string,
+  sender: string,
+  receiver: string
+}
+
 export default class SpaceSocket {
   io: Server;
   users: any;
@@ -19,10 +27,12 @@ export default class SpaceSocket {
   roomScreenShare: any;
   npcData: any;
   usersTrackingData: Map<string, Track>;
+  commTrackingData: Map<string, ActionTrack>;
 
   constructor(server: http.Server) {
     this.users = {};
     this.usersTrackingData = new Map<string, Track>();
+    this.commTrackingData = new Map<string, ActionTrack>();
     this.socketToRoom = {};
     this.roomUpdateRequests = {};
     this.roomScreenShare = {};
@@ -53,7 +63,7 @@ export default class SpaceSocket {
     });
 
     setInterval(() => {
-      const nsp = this.io.of('/');
+      const nsp = this.io.of("/");
       for (const roomID in this.roomUpdateRequests) {
         if (this.roomUpdateRequests[roomID]) {
           this.roomUpdateRequests[roomID] = false;
@@ -94,10 +104,10 @@ export default class SpaceSocket {
             }
           }
 
-          if (pack.length>0) this.io.to(roomID).emit('remoteData', pack);
+          if (pack.length > 0) this.io.to(roomID).emit("remoteData", pack);
         }
       }
-    }, 1000/40);
+    }, 1000 / 40);
 
     // first invariant: join room event happens before init
     this.io.on("connection", (socket: Socket | any) => {
@@ -169,6 +179,13 @@ export default class SpaceSocket {
 
       socket.on("chat message", (data: any) => {
         console.log(`chat message:${socket.id} -> ${data.id} ( ${data.message} )`);
+        this.commTrackingData.set(socket.id, {
+          senderSocket: socket.id,
+          room: socket.userData.room,
+          action: "message",
+          sender: socket.userData.username,
+          receiver: data.id
+        });
         this.io.to(data.id).emit("chat message", {
           id: socket.id,
           message: data.message,
@@ -325,5 +342,9 @@ export default class SpaceSocket {
 
   getUsersTrackingData(): Track[] {
     return Array.from(this.usersTrackingData.values());
+  }
+
+  getCommunicateTrackingData(): ActionTrack[] {
+    return Array.from(this.commTrackingData.values());
   }
 }
