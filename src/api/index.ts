@@ -20,14 +20,14 @@ export class Api {
     this.router = express.Router();
   }
 
-  use = (router: Router, onRouter: (router: Router) => void) => (routes: Route[]) => {
+  onRouteLoaded = (router: Router, onRouter: (router: Router) => void) => (routes: Route[]) => {
     onRouter(routes.reduce((acc, route) =>
         router[route.method](route.path, route.routeHandler),
       router));
   };
 
   onRouter(onCreated: (router: Router) => void) {
-    loadRoute(this.use(this.router, onCreated));
+    loadRoute(this.onRouteLoaded(this.router, onCreated));
   }
 }
 
