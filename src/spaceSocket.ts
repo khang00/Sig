@@ -179,12 +179,13 @@ export default class SpaceSocket {
 
       socket.on("chat message", (data: any) => {
         console.log(`chat message:${socket.id} -> ${data.id} ( ${data.message} )`);
+        const receiver = this.usersTrackingData.get(data.id);
         this.commTrackingData.set(socket.id, {
           senderSocket: socket.id,
           room: socket.userData.room,
           action: "message",
           sender: socket.userData.username,
-          receiver: data.id
+          receiver: receiver ? receiver.user : ""
         });
         this.io.to(data.id).emit("chat message", {
           id: socket.id,
@@ -331,6 +332,13 @@ export default class SpaceSocket {
         let roomID = this.socketToRoom[socket.id];
         if (this.roomScreenShare[roomID] === undefined) this.roomScreenShare[roomID] = {};
         this.roomScreenShare[roomID][data.screenID] = data.streamID;
+        this.commTrackingData.set(socket.id, {
+          action: "share_screen",
+          room: socket.userData.room,
+          senderSocket: socket.id,
+          sender: socket.userData.username,
+          receiver: ""
+        });
         this.io.to(roomID).emit("share screen", {
           callerID: socket.id,
           screenID: data.screenID,
