@@ -10,6 +10,11 @@ import HttpProxyRules from "http-proxy-rules";
 import * as fs from "fs";
 import Signaling from "./websocket";
 import Metrics from "./metrics";
+import cors from "cors"
+
+const CORS_OPTION = {
+  origin: "http://localhost"
+};
 
 export default class Server {
   app: Express;
@@ -23,6 +28,7 @@ export default class Server {
 
   constructor(port: number, database: Persistence<ChatRoom>, secure = false) {
     this.app = express();
+    this.app.use(cors(CORS_OPTION));
     this.api = new Api();
     this.server = this.createServer(this.app, secure);
     this.port = port;
