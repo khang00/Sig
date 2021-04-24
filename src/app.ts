@@ -1,7 +1,7 @@
 import http from "http";
 import https from "https";
 import express, { Express, Request, Response } from "express";
-import { SigRoom } from "./websocket";
+import { ChatRoom } from "./websocket";
 import { Api } from "./api";
 import { Persistence } from "./persistence";
 import HttpProxy from "http-proxy";
@@ -21,7 +21,7 @@ export default class Server {
   proxy: HttpProxy;
   proxyRules: any;
 
-  constructor(port: number, database: Persistence<SigRoom>, secure = false) {
+  constructor(port: number, database: Persistence<ChatRoom>, secure = false) {
     this.app = express();
     this.api = new Api();
     this.server = this.createServer(this.app, secure);

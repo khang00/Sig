@@ -28,7 +28,7 @@ interface Room {
   users: Username[];
 }
 
-class SigRoom extends DataRecord implements Room {
+class ChatRoom extends DataRecord implements Room {
   roomName: RoomName;
   users: Username[];
 
@@ -42,9 +42,9 @@ class SigRoom extends DataRecord implements Room {
 export default class Signaling {
   io: Server;
   cons: Record<Username, SocketId>;
-  roomDB: Persistence<SigRoom>;
+  roomDB: Persistence<ChatRoom>;
 
-  constructor(server: http.Server, database: Persistence<SigRoom>) {
+  constructor(server: http.Server, database: Persistence<ChatRoom>) {
     this.roomDB = database;
     this.cons = {};
     this.io = new Server(server, {
@@ -114,7 +114,7 @@ export default class Signaling {
     socket.on(SignalingEvents.CreateRoom, (data) => {
       const room = this.roomDB.get(data.to);
       if (room === undefined) {
-        const createdRoom = this.roomDB.save(new SigRoom(data.to));
+        const createdRoom = this.roomDB.save(new ChatRoom(data.to));
         if (createdRoom !== undefined) {
           createdRoom.users.push(data.from);
           socket.join(data.to);
@@ -132,4 +132,4 @@ export default class Signaling {
   };
 }
 
-export { SigRoom };
+export { ChatRoom };
