@@ -2,7 +2,7 @@ import http from "http";
 import https from "https";
 import express, { Express, Request, Response } from "express";
 import { ChatRoom } from "./websocket";
-import Api from "./api";
+import { Api } from "./api";
 import { Persistence } from "./persistence";
 import HttpProxy from "http-proxy";
 // @ts-ignore
@@ -31,7 +31,7 @@ export default class Server {
     this.proxy = HttpProxy.createServer();
     this.proxyRules = new HttpProxyRules({
       rules: {
-        "/*": "http://localhost:8000",
+        "/api/*": "http://localhost:10000/api"
       },
       default: "http://localhost:8000"
     });
@@ -49,10 +49,12 @@ export default class Server {
   }
 
   start(onStarted: () => void) {
-    this.addMetricsHandler();
-    // this.app.use("/api", this.api.getRoute());
-    this.addProxyHandler();
-    this.server.listen(this.port, onStarted);
+    this.api.onRouter((router) => {
+      this.app.use("/api", router);
+      this.addMetricsHandler();
+      this.addProxyHandler();
+      this.server.listen(this.port, onStarted);
+    });
   }
 
   stop(onClosed: () => void) {
