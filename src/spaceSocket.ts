@@ -127,9 +127,14 @@ export default class SpaceSocket {
 
       socket.emit("setId", { id: socket.id, npcs: this.npcData });
 
+      socket.on("ip", (ip: string) => {
+        console.log("user ip:", ip);
+        socket.userData.ip = ip;
+      });
+
       socket.on("init", (data: any) => {
         console.log(`socket.init ${data.username} ${data.model}  ${data.colour}`);
-        socket.userData.ip = data.ip ? data.ip : socket.request.connection.remoteAddress;
+        socket.userData.ip = socket.userData.ip ? socket.userData.ip : socket.request.connection.remoteAddress;
         socket.userData.username = data.username;
         socket.userData.model = data.model;
         socket.userData.colour = data.colour;
