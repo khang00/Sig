@@ -1,5 +1,5 @@
 import { Registry, collectDefaultMetrics, register, Counter, Gauge } from "prom-client";
-import SpaceSocket, { ActionTrack, Track } from "./spaceSocket";
+import SpaceSocket, { ActionTrack, CommunicationTrack, Track } from "./spaceSocket";
 
 export default class SpaceMetrics {
   sigRegistry: Registry;
@@ -13,7 +13,7 @@ export default class SpaceMetrics {
       name: "user_tracking",
       help: "ip, user, room, socket of a web socket connection",
       registers: [this.sigRegistry],
-      labelNames: ["ip", "user", "room", "socket"],
+      labelNames: ["ip", "user", "room", "socket", "client"],
       collect() {
         const usersTrackData = signaling.getUsersTrackingData();
         const userOffline = trackUsers.filter(track => usersTrackData
@@ -26,44 +26,41 @@ export default class SpaceMetrics {
       }
     });
 
-    let trackActions: ActionTrack[] = [];
+    let trackCommunications: CommunicationTrack[] = [];
     new Gauge({
       name: "communicate_tracking",
       help: "tracks communication actions by action types, room, sender, and receiver",
       registers: [this.sigRegistry],
-      labelNames: ["senderSocket", "action", "room", "sender", "receiver"],
+      labelNames: ["senderSocket", "action", "room", "sender", "receiver", "client"],
       collect() {
         const commTrackData = signaling.getCommunicateTrackingData();
-        const commCurrent = trackActions.filter(track => commTrackData
+        const commCurrent = trackCommunications.filter(track => commTrackData
           .find(value => value.senderSocket === track.senderSocket) === undefined);
 
-        trackActions = [...commTrackData];
+        trackCommunications = [...commTrackData];
 
         commCurrent.forEach((track: any) => this.set(track, 0));
         commTrackData.forEach((track: any) => this.set(track, 1));
       }
     });
 
-    /*new Gauge({
-      name: "total_ws_users",
-      help: "Number of websocket users at a point in time",
+    let trackActions: ActionTrack[] = [];
+    new Gauge({
+      name: "action_tracking",
+      help: "tracks actions by action types, room, user",
       registers: [this.sigRegistry],
-      async collect() {
-        const currentCounts = await space.getTotalUsers();
-        this.set(currentCounts);
-      },
-    });*/
+      labelNames: [ "socket", "action", "room", "user", "client"],
+      collect() {
+        const actionTrackData = signaling.getActionTrackingData();
+        const actionCurrent = trackActions.filter(track => actionTrackData
+          .find(value => value.socket === track.socket) === undefined);
 
-    /*new Gauge({
-      name: "total_ws_users_each_room",
-      help: "Number of websocket users in each room at a point in time",
-      labelNames: ["room"],
-      registers: [this.sigRegistry],
-      async collect() {
-        const records = await space.getUserEachRoom();
-        records.map(({ room, count }) => this.set({ room: room }, count));
-      },
-    });*/
+        trackActions = [...trackActions];
+
+        actionCurrent.forEach((track: any) => this.set(track, 0));
+        actionTrackData.forEach((track: any) => this.set(track, 1));
+      }
+    });
 
     collectDefaultMetrics({
       gcDurationBuckets: [0.001, 0.01, 0.1, 1, 2, 5] // These are the default buckets.

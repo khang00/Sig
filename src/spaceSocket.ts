@@ -9,14 +9,24 @@ export interface Track {
   user: string,
   room: string,
   socket: string,
+  client: string
 }
 
-export interface ActionTrack {
+export interface CommunicationTrack {
   senderSocket: string
   action: string,
   room: string,
   sender: string,
-  receiver: string
+  receiver: string,
+  client: string
+}
+
+export interface ActionTrack {
+  socket: string,
+  action: string,
+  room: string,
+  user: string,
+  client: string
 }
 
 export default class SpaceSocket {
@@ -27,12 +37,14 @@ export default class SpaceSocket {
   roomScreenShare: any;
   npcData: any;
   usersTrackingData: Map<string, Track>;
-  commTrackingData: Map<string, ActionTrack>;
+  commTrackingData: Map<string, CommunicationTrack>;
+  actionTrackingData: Map<string, ActionTrack>;
 
   constructor(server: http.Server) {
     this.users = {};
     this.usersTrackingData = new Map<string, Track>();
-    this.commTrackingData = new Map<string, ActionTrack>();
+    this.commTrackingData = new Map<string, CommunicationTrack>();
+    this.actionTrackingData = new Map<string, ActionTrack>();
     this.socketToRoom = {};
     this.roomUpdateRequests = {};
     this.roomScreenShare = {};
@@ -131,7 +143,8 @@ export default class SpaceSocket {
           ip: socket.request.connection.remoteAddress,
           user: socket.userData.username,
           room: socket.userData.room,
-          socket: socket.id
+          socket: socket.id,
+          client: socket.client.id
         };
 
         this.usersTrackingData.set(socket.id, userTrack);
@@ -154,6 +167,13 @@ export default class SpaceSocket {
 
       socket.on("onChangeFloor", (data: any) => {
         let roomID = this.socketToRoom[socket.id];
+        this.actionTrackingData.set(socket.id, {
+          socket: socket.id,
+          action: "change floor",
+          room: socket.userData.room,
+          user: socket.userData.username,
+          client: socket.client.id
+        });
         this.io.to(roomID).emit("onChangeFloor", { id: socket.id, floorIndex: data.floorIndex });
       });
 
@@ -185,6 +205,7 @@ export default class SpaceSocket {
           room: socket.userData.room,
           action: "message",
           sender: socket.userData.username,
+          client: socket.client.id,
           receiver: receiver ? receiver.user : ""
         });
         this.io.to(data.id).emit("chat message", {
@@ -337,6 +358,7 @@ export default class SpaceSocket {
           room: socket.userData.room,
           senderSocket: socket.id,
           sender: socket.userData.username,
+          client: socket.client.id,
           receiver: ""
         });
         this.io.to(roomID).emit("share screen", {
@@ -352,7 +374,11 @@ export default class SpaceSocket {
     return Array.from(this.usersTrackingData.values());
   }
 
-  getCommunicateTrackingData(): ActionTrack[] {
+  getCommunicateTrackingData(): CommunicationTrack[] {
     return Array.from(this.commTrackingData.values());
+  }
+
+  getActionTrackingData(): ActionTrack[] {
+    return Array.from(this.actionTrackingData.values());
   }
 }
