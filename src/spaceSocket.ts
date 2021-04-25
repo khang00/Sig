@@ -129,6 +129,7 @@ export default class SpaceSocket {
 
       socket.on("init", (data: any) => {
         console.log(`socket.init ${data.username} ${data.model}  ${data.colour}`);
+        socket.userData.ip = data.ip ? data.ip : socket.request.connection.remoteAddress;
         socket.userData.username = data.username;
         socket.userData.model = data.model;
         socket.userData.colour = data.colour;
@@ -140,7 +141,7 @@ export default class SpaceSocket {
         socket.userData.action = "idle";
 
         const userTrack: Track = {
-          ip: socket.request.connection.remoteAddress,
+          ip: socket.userData.ip,
           user: socket.userData.username,
           room: socket.userData.room,
           socket: socket.id,
