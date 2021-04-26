@@ -10,6 +10,7 @@ export interface Track {
   room: string,
   socket: string,
   client: string,
+  timestamp: string,
 }
 
 export interface CommunicationTrack {
@@ -151,6 +152,7 @@ export default class SpaceSocket {
           room: socket.userData.room,
           socket: socket.id,
           client: socket.client.id,
+          timestamp: Math.floor(Date.now() / 1000).toString(10)
         };
 
         this.usersTrackingData.set(socket.id, userTrack);

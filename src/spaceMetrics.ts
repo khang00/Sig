@@ -14,7 +14,7 @@ export default class SpaceMetrics {
       name: "user_tracking",
       help: "ip, user, room, socket of a web socket connection",
       registers: [this.sigRegistry],
-      labelNames: ["ip", "user", "room", "socket", "client", "country"],
+      labelNames: ["ip", "user", "room", "socket", "client", "timestamp", "country"],
       async collect() {
         const usersTrackData = await Promise.all(signaling.getUsersTrackingData().map(async track => {
           return {
