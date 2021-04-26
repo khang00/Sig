@@ -10,7 +10,6 @@ export interface Track {
   room: string,
   socket: string,
   client: string,
-  country: string,
 }
 
 export interface CommunicationTrack {
@@ -152,7 +151,6 @@ export default class SpaceSocket {
           room: socket.userData.room,
           socket: socket.id,
           client: socket.client.id,
-          country: "vietnam"
         };
 
         this.usersTrackingData.set(socket.id, userTrack);
