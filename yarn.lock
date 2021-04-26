@@ -298,6 +298,11 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
+"@influxdata/influxdb-client@^1.12.0":
+  version "1.12.0"
+  resolved "https://registry.yarnpkg.com/@influxdata/influxdb-client/-/influxdb-client-1.12.0.tgz#f38b3a6247685a4711c271d524ff57cb52137e14"
+  integrity sha512-cbp9struPvs4OxGOQ1eoFlMYHvw3GmAW0mJ73EkL9g/OeX7svjcVjy6Db1ggUajyORulXl4o5Wtld0LQJq5dKg==
+
 "@istanbuljs/load-nyc-config@^1.0.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@istanbuljs/load-nyc-config/-/load-nyc-config-1.1.0.tgz#fd3db1d59ecf7cf121e80650bb86712f9b55eced"
