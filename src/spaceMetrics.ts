@@ -1,5 +1,6 @@
 import { Registry, collectDefaultMetrics, register, Counter, Gauge } from "prom-client";
 import SpaceSocket, { ActionTrack, CommunicationTrack, Track } from "./spaceSocket";
+import { getCountry } from "./utils/http";
 
 export default class SpaceMetrics {
   sigRegistry: Registry;
@@ -13,9 +14,15 @@ export default class SpaceMetrics {
       name: "user_tracking",
       help: "ip, user, room, socket of a web socket connection",
       registers: [this.sigRegistry],
-      labelNames: ["ip", "user", "room", "socket", "client", "country"],
-      collect() {
-        const usersTrackData = signaling.getUsersTrackingData();
+      labelNames: ["ip", "user", "room", "socket", "client", "timestamp", "country"],
+      async collect() {
+        const usersTrackData = await Promise.all(signaling.getUsersTrackingData().map(async track => {
+          return {
+            ...track,
+            country: await getCountry(track.ip)
+          };
+        }));
+
         const userOffline = trackUsers.filter(track => usersTrackData
           .find(value => value.socket === track.socket) === undefined);
 
@@ -49,7 +56,7 @@ export default class SpaceMetrics {
       name: "action_tracking",
       help: "tracks actions by action types, room, user",
       registers: [this.sigRegistry],
-      labelNames: [ "socket", "action", "room", "user", "client"],
+      labelNames: ["socket", "action", "room", "user", "client"],
       collect() {
         const actionTrackData = signaling.getActionTrackingData();
         const actionCurrent = trackActions.filter(track => actionTrackData
