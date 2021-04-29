@@ -14,6 +14,7 @@
     "lint": "yarn prettier --write ."
   },
   "dependencies": {
+    "@influxdata/influxdb-client": "^1.12.0",
     "@socket.io/admin-ui": "^0.0.1",
     "cors": "^2.8.5",
     "express": "^4.17.1",
