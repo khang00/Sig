@@ -4,7 +4,7 @@ import { FluxTableMetaData } from "@influxdata/influxdb-client";
 import { queryApi } from "../DB";
 
 const route = {
-  path: "/user",
+  path: "/room",
   method: HttpMethod.GET,
   routeHandler: (req: Request, res: Response) => {
     let rooms: any = [];
@@ -13,8 +13,10 @@ const route = {
         |> range(start: -30d) 
         |> filter(fn: (r) => r._measurement == "prometheus" and r._field == "user_tracking")
         |> distinct(column: "user")
+        |> group(columns: ["room"])
+        |> count()
         `;
-
+    //https://community.influxdata.com/t/counting-number-of-groups/15113/2
     queryApi.queryRows(query, {
       next(row: string[], tableMeta: FluxTableMetaData) {
         let data = tableMeta.toObject(row);
