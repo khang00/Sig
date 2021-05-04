@@ -13,7 +13,7 @@ import SpaceMetrics from "./spaceMetrics";
 import cors from "cors";
 
 const CORS_OPTION = {
-  origin: "http://localhost"
+  origin: "*"
 };
 
 export default class Server {
