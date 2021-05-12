@@ -72,7 +72,11 @@ export default class SpaceSocket {
     });
 
     instrument(this.io, {
-      auth: false
+      auth: {
+        type: "basic",
+        username: "admin",
+        password: "admin"
+      }
     });
 
     setInterval(() => {
