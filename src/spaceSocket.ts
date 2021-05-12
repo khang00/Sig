@@ -75,7 +75,7 @@ export default class SpaceSocket {
       auth: {
         type: "basic",
         username: "admin",
-        password: "$2y$12$y0Rq.neJC9QosdP07rboq.Ufme/Wz9pGH4xPj2E8I3hQzAzGYMJfa"
+        password: "$2y$12$MdCEtMgqlkceAHg.VhPrzeYuUwTw9J1lmAol/OYthrc2Dy2oZwY5y"
       }
     });
 
