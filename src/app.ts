@@ -23,8 +23,7 @@ export default class Server {
     this.app.use("/api", (req :Request, resp :Response) => {
       resp.status(200).end("halo")
     });
-
-    onStarted()
+    this.server.listen(this.port, onStarted)
   }
 
   stop(onClosed: () => void) {
