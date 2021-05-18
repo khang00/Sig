@@ -1,5 +1,5 @@
 import http from "http";
-import express, { Express, Request, Response } from "express";
+import express, { Express } from "express";
 import { Api } from "./api";
 
 const CORS_OPTION = {
@@ -16,14 +16,12 @@ export default class Server {
     this.app = express();
     this.api = new Api();
     this.server = new http.Server(this.app);
-    this.port = port
+    this.port = port;
+    this.api.onRouter(router => this.app.use("/api", router));
   }
 
   start(onStarted: () => void) {
-    this.app.use("/api", (req :Request, resp :Response) => {
-      resp.status(200).end("halo")
-    });
-    this.server.listen(this.port, onStarted)
+    this.server.listen(this.port, onStarted);
   }
 
   stop(onClosed: () => void) {
