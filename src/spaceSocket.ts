@@ -5,29 +5,29 @@ import SpaceMetrics from "./spaceMetrics";
 import { instrument } from "@socket.io/admin-ui";
 
 export interface Track {
-  ip: string,
-  user: string,
-  room: string,
-  socket: string,
-  client: string,
-  timestamp: string,
+  ip: string;
+  user: string;
+  room: string;
+  socket: string;
+  client: string;
+  timestamp: string;
 }
 
 export interface CommunicationTrack {
-  senderSocket: string
-  action: string,
-  room: string,
-  sender: string,
-  receiver: string,
-  client: string
+  senderSocket: string;
+  action: string;
+  room: string;
+  sender: string;
+  receiver: string;
+  client: string;
 }
 
 export interface ActionTrack {
-  socket: string,
-  action: string,
-  room: string,
-  user: string,
-  client: string
+  socket: string;
+  action: string;
+  room: string;
+  user: string;
+  client: string;
 }
 
 export default class SpaceSocket {
@@ -60,19 +60,19 @@ export default class SpaceSocket {
       z: 0,
       heading: Math.PI,
       pb: 0,
-      action: "dance"
+      action: "dance",
     });
 
     this.io = new Server(server, {
       path: "/ws",
       cookie: false,
       cors: {
-        origin: "*"
-      }
+        origin: "*",
+      },
     });
 
     instrument(this.io, {
-      auth: false
+      auth: false,
     });
 
     setInterval(() => {
@@ -81,8 +81,7 @@ export default class SpaceSocket {
         if (this.roomUpdateRequests[roomID]) {
           this.roomUpdateRequests[roomID] = false;
           let usersInThisRoom = this.users[roomID];
-          if (usersInThisRoom === undefined)
-            usersInThisRoom = [];
+          if (usersInThisRoom === undefined) usersInThisRoom = [];
 
           let pack = [];
           for (let sId of usersInThisRoom) {
@@ -112,7 +111,7 @@ export default class SpaceSocket {
                 // @ts-ignore
                 headX: socket.userData.headX,
                 // @ts-ignore
-                headY: socket.userData.headY
+                headY: socket.userData.headY,
               });
             }
           }
@@ -124,7 +123,7 @@ export default class SpaceSocket {
 
     // first invariant: join room event happens before init
     this.io.on("connection", (socket: Socket | any) => {
-      socket.userData = { x: 0, y: 0, z: 0, heading: 0 };//Default values;
+      socket.userData = { x: 0, y: 0, z: 0, heading: 0 }; //Default values;
 
       socket.emit("setId", { id: socket.id, npcs: this.npcData });
 
@@ -134,8 +133,12 @@ export default class SpaceSocket {
       });
 
       socket.on("init", (data: any) => {
-        console.log(`socket.init ${data.username} ${data.model}  ${data.colour}`);
-        socket.userData.ip = socket.userData.ip ? socket.userData.ip : socket.request.connection.remoteAddress;
+        console.log(
+          `socket.init ${data.username} ${data.model}  ${data.colour}`
+        );
+        socket.userData.ip = socket.userData.ip
+          ? socket.userData.ip
+          : socket.request.connection.remoteAddress;
         socket.userData.username = data.username;
         socket.userData.model = data.model;
         socket.userData.colour = data.colour;
@@ -152,7 +155,7 @@ export default class SpaceSocket {
           room: socket.userData.room,
           socket: socket.id,
           client: socket.client.id,
-          timestamp: Math.floor(Date.now() / 1000).toString(10)
+          timestamp: Math.floor(Date.now() / 1000).toString(10),
         };
 
         this.usersTrackingData.set(socket.id, userTrack);
@@ -180,9 +183,12 @@ export default class SpaceSocket {
           action: "change floor",
           room: socket.userData.room,
           user: socket.userData.username,
-          client: socket.client.id
+          client: socket.client.id,
         });
-        this.io.to(roomID).emit("onChangeFloor", { id: socket.id, floorIndex: data.floorIndex });
+        this.io.to(roomID).emit("onChangeFloor", {
+          id: socket.id,
+          floorIndex: data.floorIndex,
+        });
       });
 
       socket.on("playVideo", (data: any) => {
@@ -196,7 +202,7 @@ export default class SpaceSocket {
           if (socket.userData.model !== undefined) {
             pack.push({
               id: socket.id,
-              action: "playVideo"
+              action: "playVideo",
             });
           }
         }
@@ -206,7 +212,9 @@ export default class SpaceSocket {
       });
 
       socket.on("chat message", (data: any) => {
-        console.log(`chat message:${socket.id} -> ${data.id} ( ${data.message} )`);
+        console.log(
+          `chat message:${socket.id} -> ${data.id} ( ${data.message} )`
+        );
         const receiver = this.usersTrackingData.get(data.id);
         this.commTrackingData.set(socket.id, {
           senderSocket: socket.id,
@@ -214,12 +222,12 @@ export default class SpaceSocket {
           action: "message",
           sender: socket.userData.username,
           client: socket.client.id,
-          receiver: receiver ? receiver.user : ""
+          receiver: receiver ? receiver.user : "",
         });
         this.io.to(data.id).emit("chat message", {
           id: socket.id,
           message: data.message,
-          username: socket.userData.username
+          username: socket.userData.username,
         });
 
         this.roomUpdateRequests[this.socketToRoom[socket.id]] = true;
@@ -230,7 +238,7 @@ export default class SpaceSocket {
         const nsp = this.io.of("/");
         let pack = {
           id: socket.id,
-          status: data.status
+          status: data.status,
         };
         this.io.emit("turnLight", pack);
 
@@ -258,13 +266,16 @@ export default class SpaceSocket {
         if (payload === "AllKnowledgeIsGoodKnowledge") {
           const nsp = this.io.of("/") as any;
           let roomList = {};
-          Object.keys(this.users).forEach(roomID => {
+          Object.keys(this.users).forEach((roomID) => {
             this.users[roomID].forEach((sID: any) => {
               // @ts-ignore
               if (roomList[roomID] === undefined) roomList[roomID] = [];
               let soc = nsp.connected[sID];
               // @ts-ignore
-              roomList[roomID].push({ id: sID, data: nsp.connected[sID].userData });
+              roomList[roomID].push({
+                id: sID,
+                data: nsp.connected[sID].userData,
+              });
             });
           });
           socket.emit("roomList", roomList);
@@ -309,7 +320,9 @@ export default class SpaceSocket {
         }
 
         this.socketToRoom[socket.id] = roomID;
-        const usersInThisRoom = this.users[roomID].filter((id: any) => id !== socket.id);
+        const usersInThisRoom = this.users[roomID].filter(
+          (id: any) => id !== socket.id
+        );
 
         socket.join(roomID);
         socket.emit("all users", usersInThisRoom);
@@ -321,7 +334,8 @@ export default class SpaceSocket {
           if (!error) {
             let jsonString = txtString.toString();
             var data = JSON.parse(jsonString);
-            if (data && data[roomID]) socket.emit("updateCustomObjects", data[roomID]);
+            if (data && data[roomID])
+              socket.emit("updateCustomObjects", data[roomID]);
           }
         });
 
@@ -333,11 +347,17 @@ export default class SpaceSocket {
       });
 
       socket.on("sending signal", (payload: any) => {
-        this.io.to(payload.userToSignal).emit("user joined", { signal: payload.signal, callerID: payload.callerID });
+        this.io.to(payload.userToSignal).emit("user joined", {
+          signal: payload.signal,
+          callerID: payload.callerID,
+        });
       });
 
       socket.on("returning signal", (payload: any) => {
-        this.io.to(payload.callerID).emit("receiving returned signal", { signal: payload.signal, id: socket.id });
+        this.io.to(payload.callerID).emit("receiving returned signal", {
+          signal: payload.signal,
+          id: socket.id,
+        });
       });
 
       socket.on("disconnect", () => {
@@ -359,7 +379,8 @@ export default class SpaceSocket {
 
       socket.on("share screen", (data: any) => {
         let roomID = this.socketToRoom[socket.id];
-        if (this.roomScreenShare[roomID] === undefined) this.roomScreenShare[roomID] = {};
+        if (this.roomScreenShare[roomID] === undefined)
+          this.roomScreenShare[roomID] = {};
         this.roomScreenShare[roomID][data.screenID] = data.streamID;
         this.commTrackingData.set(socket.id, {
           action: "share_screen",
@@ -367,12 +388,12 @@ export default class SpaceSocket {
           senderSocket: socket.id,
           sender: socket.userData.username,
           client: socket.client.id,
-          receiver: ""
+          receiver: "",
         });
         this.io.to(roomID).emit("share screen", {
           callerID: socket.id,
           screenID: data.screenID,
-          streamID: data.streamID
+          streamID: data.streamID,
         });
       });
     });
