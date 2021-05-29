@@ -59,7 +59,8 @@ export default class SpaceMetrics {
     let trackCommunications: CommunicationTrack[] = [];
     new Gauge({
       name: "communicate_tracking",
-      help: "tracks communication actions by action types, room, sender, and receiver",
+      help:
+        "tracks communication actions by action types, room, sender, and receiver",
       registers: [this.sigRegistry],
       labelNames: [
         "senderSocket",
