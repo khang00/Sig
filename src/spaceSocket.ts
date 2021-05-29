@@ -49,19 +49,58 @@ export default class SpaceSocket {
     this.socketToRoom = {};
     this.roomUpdateRequests = {};
     this.roomScreenShare = {};
-    this.npcData = [];
-    this.npcData.push({
-      id: "NPC",
-      username: "NPC",
-      model: "Waitress",
-      colour: "White",
-      x: 0,
-      y: 0,
-      z: 0,
-      heading: Math.PI,
-      pb: 0,
-      action: "dance",
-    });
+    this.npcData = {};
+    this.npcData.pk = [{
+			id: "NPC",
+			username: "Mario",
+			model: "Office_Male_Business_Chr_04",
+			colour: "02_B",
+			x: 510,
+			y: 25,
+			z: -3310,
+			heading: -Math.PI,
+			pb: 0,
+			action: "sit",
+			path: []
+		}, {
+			id: "NPC",
+			username: "Mario",
+			model: "Office_Male_Developer_Chr_01",
+			colour: "01_A",
+			x: 2100,
+			y: 35,
+			z: -2498.35,
+			heading: -0.680303151066,
+			pb: 0,
+			action: "work",
+			path: []
+		}
+    this.npcData.cf = [{
+			id: "NPC",
+			username: "Mario",
+			model: "Office_Male_Business_Chr_04",
+			colour: "02_B",
+			x: 510,
+			y: 25,
+			z: -3310,
+			heading: -Math.PI,
+			pb: 0,
+			action: "sit",
+			path: []
+		}, {
+			id: "NPC",
+			username: "Mario",
+			model: "Office_Male_Developer_Chr_01",
+			colour: "01_A",
+			x: 2100,
+			y: 35,
+			z: -2498.35,
+			heading: -0.680303151066,
+			pb: 0,
+			action: "work",
+			path: []
+		}]
+    
 
     this.io = new Server(server, {
       path: "/ws",
@@ -347,10 +386,10 @@ export default class SpaceSocket {
           }
         });
 
-        if (server.npcData && roomID.startsWith('PK-')) {
-        	socket.emit('updateNPCData', server.npcData.pk);
+        if (this.npcData && roomID.startsWith('PK-')) {
+        	socket.emit('updateNPCData', this.npcData.pk);
         } else if (roomID.startsWith('CF-')) {
-        	socket.emit('updateNPCData', server.npcData.cf);
+        	socket.emit('updateNPCData', this.npcData.cf);
         }
 
         this.roomUpdateRequests[roomID] = true;
