@@ -348,11 +348,11 @@ export default class SpaceSocket {
         });
       });
 
-      socket.on("updateIp", (ip) => {
+      socket.on("updateIp", (ip: any) => {
         console.log(`${socket.id} has IP: ${ip}`);
       });
 
-      socket.on("stopScreenShare", (screenID) => {
+      socket.on("stopScreenShare", (screenID: any) => {
         console.log(`${socket.id} stop sharing screen: ${screenID}`);
       });
 
