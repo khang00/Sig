@@ -13,7 +13,7 @@ import SpaceMetrics from "./spaceMetrics";
 import cors from "cors";
 
 const CORS_OPTION = {
-  origin: "*"
+  origin: "*",
 };
 
 export default class Server {
@@ -37,9 +37,9 @@ export default class Server {
     this.proxy = HttpProxy.createServer();
     this.proxyRules = new HttpProxyRules({
       rules: {
-        "/api/*": "http://localhost:10000/api"
+        "/api/*": "http://localhost:10000/api",
       },
-      default: "http://localhost:8000"
+      default: "http://localhost:8000",
     });
   }
 
