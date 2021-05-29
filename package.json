@@ -8,6 +8,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "PORT=10000 nodemon src/index.ts",
+    "devwin": "set PORT=10000 && nodemon src/index.ts",
     "prod": "yarn build && NODE=prod PORT=10000 node dist/src/index.js",
     "build": "tsc --project ./",
     "test": "PORT=10000 jest --detectOpenHandles",

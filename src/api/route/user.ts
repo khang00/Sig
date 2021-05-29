@@ -7,10 +7,12 @@ const route = {
   path: "/user",
   method: HttpMethod.GET,
   routeHandler: (req: Request, res: Response) => {
+    const reqQuery = req.query;
+    console.log("request query", reqQuery);
     let rooms: any = [];
     let query;
     query = `from(bucket: "signaling") 
-        |> range(start: -30d) 
+        |> range(start: ${reqQuery.from ? reqQuery.from : "-30d"}${reqQuery.to ? ', stop:' + reqQuery.to : ''}) 
         |> filter(fn: (r) => r._measurement == "prometheus" and r._field == "user_tracking")
         |> distinct(column: "user")
         `;
