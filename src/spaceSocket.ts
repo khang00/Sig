@@ -204,7 +204,7 @@ export default class SpaceSocket {
       path: "/ws",
       cookie: false,
       cors: {
-        origin: "*"
+        origin: ["https://our3d.space", "https://3d.fromlabs.com", "http://127.0.0.1:5500"]
       }
     });
 
