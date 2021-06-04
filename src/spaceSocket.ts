@@ -49,19 +49,310 @@ export default class SpaceSocket {
     this.socketToRoom = {};
     this.roomUpdateRequests = {};
     this.roomScreenShare = {};
-    this.npcData = [];
-    this.npcData.push({
-      id: "NPC",
-      username: "NPC",
-      model: "Waitress",
-      colour: "White",
-      x: 0,
-      y: 0,
-      z: 0,
-      heading: Math.PI,
-      pb: 0,
-      action: "dance",
-    });
+    this.npcData = {};
+    this.npcData.pk = [
+      {
+        id: "NPC",
+        username: "Mario",
+        model: "Office_Male_Business_Chr_04",
+        colour: "02_B",
+        x: 510,
+        y: 25,
+        z: -3310,
+        heading: -Math.PI,
+        pb: 0,
+        action: "sit",
+        path: [],
+      },
+      {
+        id: "NPC",
+        username: "Mario",
+        model: "Office_Male_Developer_Chr_01",
+        colour: "01_A",
+        x: 2100,
+        y: 35,
+        z: -2498.35,
+        heading: -0.680303151066,
+        pb: 0,
+        action: "work",
+        path: [],
+      },
+      {
+        id: "NPC",
+        username: "Mario",
+        model: "Office_Female_Developer_Chr_01",
+        colour: "03_C",
+        x: 973.97,
+        y: 35,
+        z: -1156.34,
+        heading: -2.8429944190988,
+        pb: 0,
+        action: "work",
+        path: [],
+      },
+      {
+        id: "NPC",
+        username: "Mario",
+        model: "Office_Male_Business_Chr_02",
+        colour: "02_A",
+        x: 498.854,
+        y: 35,
+        z: -1676.703,
+        heading: 0.7158589446208921,
+        pb: 0,
+        action: "sit",
+        path: [
+          {
+            x: 498.854,
+            y: 54.24,
+            z: -1676.703,
+            action: "sit",
+            duration: 2000,
+            onStop: "sit",
+            delay: 3000,
+          },
+          {
+            x: 213.196,
+            y: 2.59,
+            z: -1564.868,
+            action: "walk",
+            duration: 1000,
+            onStop: "idle",
+            delay: 0,
+          },
+          {
+            x: 203.541,
+            y: 2.59,
+            z: -494.614,
+            action: "walk",
+            duration: 5000,
+            onStop: "point",
+            delay: 5000,
+          },
+          {
+            x: 1329.19,
+            y: 2.59,
+            z: -646.129,
+            action: "walk",
+            duration: 5000,
+            onStop: "idle",
+            delay: 5000,
+          },
+          {
+            x: 203.541,
+            y: 2.59,
+            z: -494.614,
+            action: "walk",
+            duration: 5000,
+            onStop: "point",
+            delay: 5000,
+          },
+          {
+            x: 213.196,
+            y: 2.59,
+            z: -1564.868,
+            action: "walk",
+            duration: 1000,
+            onStop: "idle",
+            delay: 0,
+          },
+          {
+            x: 498.854,
+            y: 54.24,
+            z: -1676.703,
+            action: "walk",
+            duration: 2000,
+            onStop: "sit",
+            delay: 3000,
+          },
+        ],
+      },
+      {
+        id: "NPC",
+        username: "Sonic",
+        model: "Office_Female_Business_Chr_03",
+        colour: "04_A",
+        x: 388,
+        y: 2.5,
+        z: -3798,
+        heading: -Math.PI,
+        pb: 0, // rotaion
+        action: "point",
+        path: [
+          // {x: -1000, y: 0, z: 10},  //start point: must same as declared npc position
+          {
+            x: 388,
+            y: 2.5,
+            z: -3798,
+            action: "walk",
+            duration: 3000,
+            onStop: "point",
+            delay: 5000,
+          },
+          {
+            x: 758.7,
+            y: 2.5,
+            z: -3774,
+            action: "walk",
+            duration: 3000,
+            onStop: "cheer",
+            delay: 5000,
+          },
+        ],
+      },
+    ];
+
+    this.npcData.cf = [
+      {
+        id: "NPC",
+        username: "Mario",
+        model: "Office_Male_Business_Chr_04",
+        colour: "02_B",
+        x: 510,
+        y: 25,
+        z: -3310,
+        heading: -Math.PI,
+        pb: 0,
+        action: "sit",
+        path: [],
+      },
+      {
+        id: "NPC",
+        username: "Mario",
+        model: "Office_Male_Developer_Chr_01",
+        colour: "01_A",
+        x: 2100,
+        y: 35,
+        z: -2498.35,
+        heading: -0.680303151066,
+        pb: 0,
+        action: "work",
+        path: [],
+      },
+      {
+        id: "NPC",
+        username: "Mario",
+        model: "Office_Female_Developer_Chr_01",
+        colour: "03_C",
+        x: 973.97,
+        y: 35,
+        z: -1156.34,
+        heading: -2.8429944190988,
+        pb: 0,
+        action: "work",
+        path: [],
+      },
+      {
+        id: "NPC",
+        username: "Mario",
+        model: "Office_Male_Business_Chr_02",
+        colour: "02_A",
+        x: 498.854,
+        y: 35,
+        z: -1676.703,
+        heading: 0.7158589446208921,
+        pb: 0,
+        action: "sit",
+        path: [
+          {
+            x: 498.854,
+            y: 54.24,
+            z: -1676.703,
+            action: "sit",
+            duration: 2000,
+            onStop: "sit",
+            delay: 3000,
+          },
+          {
+            x: 213.196,
+            y: 2.59,
+            z: -1564.868,
+            action: "walk",
+            duration: 1000,
+            onStop: "idle",
+            delay: 0,
+          },
+          {
+            x: 203.541,
+            y: 2.59,
+            z: -494.614,
+            action: "walk",
+            duration: 5000,
+            onStop: "point",
+            delay: 5000,
+          },
+          {
+            x: 1329.19,
+            y: 2.59,
+            z: -646.129,
+            action: "walk",
+            duration: 5000,
+            onStop: "idle",
+            delay: 5000,
+          },
+          {
+            x: 203.541,
+            y: 2.59,
+            z: -494.614,
+            action: "walk",
+            duration: 5000,
+            onStop: "point",
+            delay: 5000,
+          },
+          {
+            x: 213.196,
+            y: 2.59,
+            z: -1564.868,
+            action: "walk",
+            duration: 1000,
+            onStop: "idle",
+            delay: 0,
+          },
+          {
+            x: 498.854,
+            y: 54.24,
+            z: -1676.703,
+            action: "walk",
+            duration: 2000,
+            onStop: "sit",
+            delay: 3000,
+          },
+        ],
+      },
+      {
+        id: "NPC",
+        username: "Sonic",
+        model: "Office_Female_Business_Chr_03",
+        colour: "04_A",
+        x: 388,
+        y: 2.5,
+        z: -3798,
+        heading: -Math.PI,
+        pb: 0, // rotaion
+        action: "point",
+        path: [
+          // {x: -1000, y: 0, z: 10},  //start point: must same as declared npc position
+          {
+            x: 388,
+            y: 2.5,
+            z: -3798,
+            action: "walk",
+            duration: 3000,
+            onStop: "point",
+            delay: 5000,
+          },
+          {
+            x: 758.7,
+            y: 2.5,
+            z: -3774,
+            action: "walk",
+            duration: 3000,
+            onStop: "cheer",
+            delay: 5000,
+          },
+        ],
+      },
+    ];
 
     this.io = new Server(server, {
       path: "/ws",
@@ -303,6 +594,14 @@ export default class SpaceSocket {
         });
       });
 
+      socket.on("updateIp", (ip: any) => {
+        console.log(`${socket.id} has IP: ${ip}`);
+      });
+
+      socket.on("stopScreenShare", (screenID: any) => {
+        console.log(`${socket.id} stop sharing screen: ${screenID}`);
+      });
+
       socket.on("join room", (roomID: any) => {
         if (roomID === undefined || roomID === null) return;
 
@@ -325,7 +624,7 @@ export default class SpaceSocket {
         );
 
         socket.join(roomID);
-        socket.emit("all users", usersInThisRoom);
+        socket.emit("roomJoined", usersInThisRoom);
         if (this.roomScreenShare[roomID] !== undefined) {
           socket.emit("updateRoomStreams", this.roomScreenShare[roomID]);
         }
@@ -339,8 +638,10 @@ export default class SpaceSocket {
           }
         });
 
-        if (this.npcData) {
-          socket.emit("updateNPCData", this.npcData);
+        if (this.npcData && roomID.startsWith("PK-")) {
+          socket.emit("updateNPCData", this.npcData.pk);
+        } else if (roomID.startsWith("CF-")) {
+          socket.emit("updateNPCData", this.npcData.cf);
         }
 
         this.roomUpdateRequests[roomID] = true;

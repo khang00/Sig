@@ -6,7 +6,7 @@ const route = {
   method: HttpMethod.GET,
   routeHandler: (req: Request, res: Response) => {
     res.send("This is main route for APIs");
-  }
+  },
 };
 
-export default route
+export default route;
