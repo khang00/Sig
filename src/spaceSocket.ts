@@ -1,7 +1,6 @@
 import { Server, Socket } from "socket.io";
 import http from "http";
 import fs from "fs";
-import SpaceMetrics from "./spaceMetrics";
 import { instrument } from "@socket.io/admin-ui";
 
 export interface Track {
@@ -49,8 +48,7 @@ export default class SpaceSocket {
     this.socketToRoom = {};
     this.roomUpdateRequests = {};
     this.roomScreenShare = {};
-    this.npcData = {};
-    this.npcData.pk = [
+    this.npcData = [
       {
         id: "NPC",
         username: "Mario",
@@ -62,7 +60,7 @@ export default class SpaceSocket {
         heading: -Math.PI,
         pb: 0,
         action: "sit",
-        path: [],
+        path: []
       },
       {
         id: "NPC",
@@ -75,7 +73,7 @@ export default class SpaceSocket {
         heading: -0.680303151066,
         pb: 0,
         action: "work",
-        path: [],
+        path: []
       },
       {
         id: "NPC",
@@ -88,7 +86,7 @@ export default class SpaceSocket {
         heading: -2.8429944190988,
         pb: 0,
         action: "work",
-        path: [],
+        path: []
       },
       {
         id: "NPC",
@@ -109,7 +107,7 @@ export default class SpaceSocket {
             action: "sit",
             duration: 2000,
             onStop: "sit",
-            delay: 3000,
+            delay: 3000
           },
           {
             x: 213.196,
@@ -118,7 +116,7 @@ export default class SpaceSocket {
             action: "walk",
             duration: 1000,
             onStop: "idle",
-            delay: 0,
+            delay: 0
           },
           {
             x: 203.541,
@@ -127,7 +125,7 @@ export default class SpaceSocket {
             action: "walk",
             duration: 5000,
             onStop: "point",
-            delay: 5000,
+            delay: 5000
           },
           {
             x: 1329.19,
@@ -136,7 +134,7 @@ export default class SpaceSocket {
             action: "walk",
             duration: 5000,
             onStop: "idle",
-            delay: 5000,
+            delay: 5000
           },
           {
             x: 203.541,
@@ -145,7 +143,7 @@ export default class SpaceSocket {
             action: "walk",
             duration: 5000,
             onStop: "point",
-            delay: 5000,
+            delay: 5000
           },
           {
             x: 213.196,
@@ -154,7 +152,7 @@ export default class SpaceSocket {
             action: "walk",
             duration: 1000,
             onStop: "idle",
-            delay: 0,
+            delay: 0
           },
           {
             x: 498.854,
@@ -163,9 +161,9 @@ export default class SpaceSocket {
             action: "walk",
             duration: 2000,
             onStop: "sit",
-            delay: 3000,
-          },
-        ],
+            delay: 3000
+          }
+        ]
       },
       {
         id: "NPC",
@@ -187,7 +185,7 @@ export default class SpaceSocket {
             action: "walk",
             duration: 3000,
             onStop: "point",
-            delay: 5000,
+            delay: 5000
           },
           {
             x: 758.7,
@@ -196,174 +194,23 @@ export default class SpaceSocket {
             action: "walk",
             duration: 3000,
             onStop: "cheer",
-            delay: 5000,
-          },
-        ],
-      },
-    ];
-
-    this.npcData.cf = [
-      {
-        id: "NPC",
-        username: "Mario",
-        model: "Office_Male_Business_Chr_04",
-        colour: "02_B",
-        x: 510,
-        y: 25,
-        z: -3310,
-        heading: -Math.PI,
-        pb: 0,
-        action: "sit",
-        path: [],
-      },
-      {
-        id: "NPC",
-        username: "Mario",
-        model: "Office_Male_Developer_Chr_01",
-        colour: "01_A",
-        x: 2100,
-        y: 35,
-        z: -2498.35,
-        heading: -0.680303151066,
-        pb: 0,
-        action: "work",
-        path: [],
-      },
-      {
-        id: "NPC",
-        username: "Mario",
-        model: "Office_Female_Developer_Chr_01",
-        colour: "03_C",
-        x: 973.97,
-        y: 35,
-        z: -1156.34,
-        heading: -2.8429944190988,
-        pb: 0,
-        action: "work",
-        path: [],
-      },
-      {
-        id: "NPC",
-        username: "Mario",
-        model: "Office_Male_Business_Chr_02",
-        colour: "02_A",
-        x: 498.854,
-        y: 35,
-        z: -1676.703,
-        heading: 0.7158589446208921,
-        pb: 0,
-        action: "sit",
-        path: [
-          {
-            x: 498.854,
-            y: 54.24,
-            z: -1676.703,
-            action: "sit",
-            duration: 2000,
-            onStop: "sit",
-            delay: 3000,
-          },
-          {
-            x: 213.196,
-            y: 2.59,
-            z: -1564.868,
-            action: "walk",
-            duration: 1000,
-            onStop: "idle",
-            delay: 0,
-          },
-          {
-            x: 203.541,
-            y: 2.59,
-            z: -494.614,
-            action: "walk",
-            duration: 5000,
-            onStop: "point",
-            delay: 5000,
-          },
-          {
-            x: 1329.19,
-            y: 2.59,
-            z: -646.129,
-            action: "walk",
-            duration: 5000,
-            onStop: "idle",
-            delay: 5000,
-          },
-          {
-            x: 203.541,
-            y: 2.59,
-            z: -494.614,
-            action: "walk",
-            duration: 5000,
-            onStop: "point",
-            delay: 5000,
-          },
-          {
-            x: 213.196,
-            y: 2.59,
-            z: -1564.868,
-            action: "walk",
-            duration: 1000,
-            onStop: "idle",
-            delay: 0,
-          },
-          {
-            x: 498.854,
-            y: 54.24,
-            z: -1676.703,
-            action: "walk",
-            duration: 2000,
-            onStop: "sit",
-            delay: 3000,
-          },
-        ],
-      },
-      {
-        id: "NPC",
-        username: "Sonic",
-        model: "Office_Female_Business_Chr_03",
-        colour: "04_A",
-        x: 388,
-        y: 2.5,
-        z: -3798,
-        heading: -Math.PI,
-        pb: 0, // rotaion
-        action: "point",
-        path: [
-          // {x: -1000, y: 0, z: 10},  //start point: must same as declared npc position
-          {
-            x: 388,
-            y: 2.5,
-            z: -3798,
-            action: "walk",
-            duration: 3000,
-            onStop: "point",
-            delay: 5000,
-          },
-          {
-            x: 758.7,
-            y: 2.5,
-            z: -3774,
-            action: "walk",
-            duration: 3000,
-            onStop: "cheer",
-            delay: 5000,
-          },
-        ],
-      },
+            delay: 5000
+          }
+        ]
+      }
     ];
 
     this.io = new Server(server, {
       path: "/ws",
       cookie: false,
       cors: {
-        origin: "*",
-      },
+        origin: ["https://our3d.space", "https://3d.fromlabs.com", "http://127.0.0.1:5500"],
+        credentials: false
+      }
     });
 
     instrument(this.io, {
-      auth: false,
+      auth: false
     });
 
     setInterval(() => {
@@ -402,7 +249,7 @@ export default class SpaceSocket {
                 // @ts-ignore
                 headX: socket.userData.headX,
                 // @ts-ignore
-                headY: socket.userData.headY,
+                headY: socket.userData.headY
               });
             }
           }
@@ -446,7 +293,7 @@ export default class SpaceSocket {
           room: socket.userData.room,
           socket: socket.id,
           client: socket.client.id,
-          timestamp: Math.floor(Date.now() / 1000).toString(10),
+          timestamp: Math.floor(Date.now() / 1000).toString(10)
         };
 
         this.usersTrackingData.set(socket.id, userTrack);
@@ -474,11 +321,11 @@ export default class SpaceSocket {
           action: "change floor",
           room: socket.userData.room,
           user: socket.userData.username,
-          client: socket.client.id,
+          client: socket.client.id
         });
         this.io.to(roomID).emit("onChangeFloor", {
           id: socket.id,
-          floorIndex: data.floorIndex,
+          floorIndex: data.floorIndex
         });
       });
 
@@ -493,7 +340,7 @@ export default class SpaceSocket {
           if (socket.userData.model !== undefined) {
             pack.push({
               id: socket.id,
-              action: "playVideo",
+              action: "playVideo"
             });
           }
         }
@@ -513,12 +360,12 @@ export default class SpaceSocket {
           action: "message",
           sender: socket.userData.username,
           client: socket.client.id,
-          receiver: receiver ? receiver.user : "",
+          receiver: receiver ? receiver.user : ""
         });
         this.io.to(data.id).emit("chat message", {
           id: socket.id,
           message: data.message,
-          username: socket.userData.username,
+          username: socket.userData.username
         });
 
         this.roomUpdateRequests[this.socketToRoom[socket.id]] = true;
@@ -529,7 +376,7 @@ export default class SpaceSocket {
         const nsp = this.io.of("/");
         let pack = {
           id: socket.id,
-          status: data.status,
+          status: data.status
         };
         this.io.emit("turnLight", pack);
 
@@ -565,7 +412,7 @@ export default class SpaceSocket {
               // @ts-ignore
               roomList[roomID].push({
                 id: sID,
-                data: nsp.connected[sID].userData,
+                data: nsp.connected[sID].userData
               });
             });
           });
@@ -650,14 +497,14 @@ export default class SpaceSocket {
       socket.on("sending signal", (payload: any) => {
         this.io.to(payload.userToSignal).emit("user joined", {
           signal: payload.signal,
-          callerID: payload.callerID,
+          callerID: payload.callerID
         });
       });
 
       socket.on("returning signal", (payload: any) => {
         this.io.to(payload.callerID).emit("receiving returned signal", {
           signal: payload.signal,
-          id: socket.id,
+          id: socket.id
         });
       });
 
@@ -689,12 +536,12 @@ export default class SpaceSocket {
           senderSocket: socket.id,
           sender: socket.userData.username,
           client: socket.client.id,
-          receiver: "",
+          receiver: ""
         });
         this.io.to(roomID).emit("share screen", {
           callerID: socket.id,
           screenID: data.screenID,
-          streamID: data.streamID,
+          streamID: data.streamID
         });
       });
     });
