@@ -7,7 +7,7 @@ export enum HttpMethod {
 
 export const getCountry = async (ip: string): Promise<string> => {
   const response = await fetch(
-    `https://api.ipgeolocation.io/ipgeo?apiKey=4da1f1a06ce6487391e7c20f7eea8ce6&ip=${ip}`
+    `https://api.ipgeolocation.io/ipgeo?apiKey=59c7d79861e54a219056fc6c7e7b67f1&ip=${ip}`
   );
   return (await response.json()).country_name;
 };
