@@ -11,9 +11,10 @@ import * as fs from "fs";
 import SpaceSocket from "./spaceSocket";
 import SpaceMetrics from "./spaceMetrics";
 import cors from "cors";
+import bodyParser from "body-parser";
 
 const CORS_OPTION = {
-  origin: "*"
+  origin: "*",
 };
 
 export default class Server {
@@ -29,6 +30,8 @@ export default class Server {
   constructor(port: number, database: Persistence<ChatRoom>, secure = false) {
     this.app = express();
     this.app.use(cors(CORS_OPTION));
+    this.app.use(bodyParser.urlencoded({ extended: false }));
+    this.app.use(bodyParser.json());
     this.api = new Api();
     this.server = this.createServer(this.app, secure);
     this.port = port;
@@ -37,9 +40,9 @@ export default class Server {
     this.proxy = HttpProxy.createServer();
     this.proxyRules = new HttpProxyRules({
       rules: {
-        "/api/*": "http://localhost:10000/api"
+        "/api/*": "http://localhost:10000/api",
       },
-      default: "http://localhost:8000"
+      default: "http://localhost:8000",
     });
   }
 

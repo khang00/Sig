@@ -441,6 +441,14 @@ export default class SpaceSocket {
         });
       });
 
+      socket.on("updateIp", (ip: any) => {
+        console.log(`${socket.id} has IP: ${ip}`);
+      });
+
+      socket.on("stopScreenShare", (screenID: any) => {
+        console.log(`${socket.id} stop sharing screen: ${screenID}`);
+      });
+
       socket.on("join room", (roomID: any) => {
         if (roomID === undefined || roomID === null) return;
 
@@ -463,7 +471,7 @@ export default class SpaceSocket {
         );
 
         socket.join(roomID);
-        socket.emit("all users", usersInThisRoom);
+        socket.emit("roomJoined", usersInThisRoom);
         if (this.roomScreenShare[roomID] !== undefined) {
           socket.emit("updateRoomStreams", this.roomScreenShare[roomID]);
         }
@@ -477,8 +485,10 @@ export default class SpaceSocket {
           }
         });
 
-        if (this.npcData) {
-          socket.emit("updateNPCData", this.npcData);
+        if (this.npcData && roomID.startsWith("PK-")) {
+          socket.emit("updateNPCData", this.npcData.pk);
+        } else if (roomID.startsWith("CF-")) {
+          socket.emit("updateNPCData", this.npcData.cf);
         }
 
         this.roomUpdateRequests[roomID] = true;

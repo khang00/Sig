@@ -8,6 +8,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "PORT=10000 nodemon src/index.ts",
+    "devwin": "set PORT=10000 && nodemon src/index.ts",
     "prod": "yarn build && NODE=prod PORT=10000 node dist/src/index.js",
     "build": "tsc --project ./",
     "test": "PORT=10000 jest --detectOpenHandles",
@@ -16,6 +17,8 @@
   "dependencies": {
     "@influxdata/influxdb-client": "^1.12.0",
     "@socket.io/admin-ui": "^0.0.1",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "glob": "^7.1.6",

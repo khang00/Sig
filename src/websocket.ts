@@ -51,12 +51,12 @@ export default class Signaling {
       path: "/ws",
       cookie: false,
       cors: {
-        origin: "*"
-      }
+        origin: "*",
+      },
     });
     instrument(this.io, {
       auth: false,
-      namespaceName: "/"
+      namespaceName: "/",
     });
     this.io.on("connection", this.onConnection);
   }
@@ -67,7 +67,7 @@ export default class Signaling {
       return records.map(({ roomName, users }) => {
         return {
           room: roomName,
-          count: users.length
+          count: users.length,
         };
       });
     } else return [];
